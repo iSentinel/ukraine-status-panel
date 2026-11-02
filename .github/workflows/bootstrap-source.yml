@@ -27,7 +27,9 @@ jobs:
           set -euo pipefail
           archive=/tmp/ukraine-status-panel-public.tar.xz
           keep=/tmp/usp-public-docs
+          bootstrap=/tmp/bootstrap-source.yml
           mkdir -p "$keep"
+          cp .github/workflows/bootstrap-source.yml "$bootstrap"
           for f in .gitignore CHANGELOG.md CONTRIBUTING.md LICENSE ROADMAP.md secrets.example.yaml README.md README_EN.md README_RU.md README_UA.md; do
             if [ -f "$f" ]; then
               cp --parents "$f" "$keep/"
@@ -42,7 +44,9 @@ jobs:
           fi
           tar -xJf "$archive" -C .
           cp -a "$keep"/. .
-          rm -f .github/workflows/bootstrap-source.yml
+          rm -rf .github/workflows
+          mkdir -p .github/workflows
+          cp "$bootstrap" .github/workflows/bootstrap-source.yml
 
       - name: Reject private/local material
         shell: bash
@@ -52,6 +56,7 @@ jobs:
           test ! -e .work-state
           test ! -e artifacts
           test ! -e RESUME.md
+          test "$(find .github/workflows -maxdepth 1 -type f -printf '%f\n' | sort)" = 'bootstrap-source.yml'
           ! grep -RIl --exclude-dir=.git --exclude='secrets.example.yaml' -E '192\.168\.131\.(179|194|208)|100\.112\.237\.96' . | grep -q .
 
       - name: Publish source tree
@@ -61,6 +66,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
+          if ! git diff --quiet -- .github/workflows/bootstrap-source.yml || ! git diff --cached --quiet -- .github/workflows/bootstrap-source.yml; then
+            echo 'Bootstrap workflow changed unexpectedly' >&2
+            exit 1
+          fi
           if git diff --cached --quiet; then
             echo 'Snapshot already matches repository'
             exit 0
