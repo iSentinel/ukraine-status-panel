@@ -1,0 +1,42 @@
+name: Bootstrap public source snapshot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - bootstrap/ukraine-status-panel-public.tar.gz
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify and unpack cleaned snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f bootstrap/ukraine-status-panel-public.tar.gz
+          tar -tzf bootstrap/ukraine-status-panel-public.tar.gz >/dev/null
+          tar -xzf bootstrap/ukraine-status-panel-public.tar.gz -C .
+          rm -rf bootstrap
+
+      - name: Publish source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Snapshot already matches repository"
+            exit 0
+          fi
+          git commit -m "feat: publish initial cleaned source snapshot"
+          git push origin HEAD:main
