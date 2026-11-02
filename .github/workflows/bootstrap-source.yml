@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - bootstrap/usp-snapshot.part-*
+      - .github/workflows/bootstrap-source.yml
 
 permissions:
   contents: write
@@ -18,18 +18,41 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Reassemble, verify and unpack cleaned snapshot
+      - name: Download, verify and unpack cleaned snapshot
+        shell: bash
+        env:
+          SNAPSHOT_URL: https://trygateway.sh/downloads/ah8DJdzJ8Ef0MDaahJMlsYLulR1EUvki3SCHwYan3Aw
+          SNAPSHOT_SHA256: 989b43affdfe8ca3557345a8ff601acdf449d2e0fc72b0ebd47d285d57b53f32
+        run: |
+          set -euo pipefail
+          archive=/tmp/ukraine-status-panel-public.tar.xz
+          keep=/tmp/usp-public-docs
+          mkdir -p "$keep"
+          for f in .gitignore CHANGELOG.md CONTRIBUTING.md LICENSE ROADMAP.md secrets.example.yaml README.md README_EN.md README_RU.md README_UA.md; do
+            if [ -f "$f" ]; then
+              cp --parents "$f" "$keep/"
+            fi
+          done
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 "$SNAPSHOT_URL" -o "$archive"
+          echo "$SNAPSHOT_SHA256  $archive" | sha256sum -c -
+          tar -tJf "$archive" >/tmp/usp-snapshot-files.txt
+          if awk '/(^|\/)\.\.($|\/)|^\//' /tmp/usp-snapshot-files.txt | grep -q .; then
+            echo 'Unsafe archive path detected' >&2
+            exit 1
+          fi
+          tar -xJf "$archive" -C .
+          cp -a "$keep"/. .
+          rm -f .github/workflows/bootstrap-source.yml
+
+      - name: Reject private/local material
         shell: bash
         run: |
           set -euo pipefail
-          for part in {00..31}; do
-            test -f "bootstrap/usp-snapshot.part-${part}"
-          done
-          cat bootstrap/usp-snapshot.part-{00..31} > /tmp/ukraine-status-panel-public.tar.xz
-          echo "989b43affdfe8ca3557345a8ff601acdf449d2e0fc72b0ebd47d285d57b53f32  /tmp/ukraine-status-panel-public.tar.xz" | sha256sum -c -
-          tar -tJf /tmp/ukraine-status-panel-public.tar.xz >/dev/null
-          tar -xJf /tmp/ukraine-status-panel-public.tar.xz -C .
-          rm -rf bootstrap
+          test ! -e secrets.yaml
+          test ! -e .work-state
+          test ! -e artifacts
+          test ! -e RESUME.md
+          ! grep -RIl --exclude-dir=.git --exclude='secrets.example.yaml' -E '192\.168\.131\.(179|194|208)|100\.112\.237\.96' . | grep -q .
 
       - name: Publish source tree
         shell: bash
@@ -39,7 +62,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           if git diff --cached --quiet; then
-            echo "Snapshot already matches repository"
+            echo 'Snapshot already matches repository'
             exit 0
           fi
           git commit -m "feat: publish initial cleaned source snapshot"
