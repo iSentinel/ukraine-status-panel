@@ -1,0 +1,908 @@
+{
+  "baseline_version": "0.115.376-dev",
+  "source_sha256": "9ba373e1aae3b519e218f43382ddaf8a0ad73114609d383480f85f7fdf249b68",
+  "cards": {
+    "page_weather": [
+      {
+        "x": 28,
+        "y": 96,
+        "width": 420,
+        "height": 234,
+        "scrollable": false,
+        "radius": 16,
+        "bg_color": 792616,
+        "border_width": 1,
+        "border_color": 2506071,
+        "widgets": [
+          {
+            "label": {
+              "id": "weather_now_title_label",
+              "x": 18,
+              "y": 14,
+              "text": "ЗАРАЗ",
+              "text_font": "usp_i18n_20",
+              "text_color": 9479352
+            }
+          },
+          {
+            "label": {
+              "id": "weather_current_temp_label",
+              "x": 18,
+              "y": 56,
+              "text": "--°C",
+              "text_font": "usp_i18n_36",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "weather_condition_label",
+              "x": 150,
+              "y": 56,
+              "width": 244,
+              "height": 54,
+              "long_mode": "WRAP",
+              "text": "--",
+              "text_font": "usp_i18n_26",
+              "text_color": 4906624
+            }
+          },
+          {
+            "label": {
+              "id": "weather_feels_label",
+              "x": 18,
+              "y": 118,
+              "width": 384,
+              "long_mode": "WRAP",
+              "text": "Відчувається: --°C",
+              "text_font": "usp_i18n_20",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "weather_humidity_label",
+              "x": 18,
+              "y": 166,
+              "width": 178,
+              "text": "Вологість: --%",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          },
+          {
+            "label": {
+              "id": "weather_wind_label",
+              "x": 202,
+              "y": 166,
+              "width": 198,
+              "text": "Вітер: -- км/год",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          }
+        ]
+      },
+      {
+        "x": 472,
+        "y": 96,
+        "width": 524,
+        "height": 234,
+        "scrollable": false,
+        "radius": 16,
+        "bg_color": 792616,
+        "border_width": 1,
+        "border_color": 2506071,
+        "widgets": [
+          {
+            "label": {
+              "id": "weather_details_title_label",
+              "x": 18,
+              "y": 14,
+              "text": "ДАНІ",
+              "text_font": "usp_i18n_20",
+              "text_color": 9479352
+            }
+          },
+          {
+            "label": {
+              "id": "weather_updated_label",
+              "x": 18,
+              "y": 58,
+              "width": 488,
+              "long_mode": "WRAP",
+              "text": "Дані на: --",
+              "text_font": "usp_i18n_20",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "weather_provider_label",
+              "x": 18,
+              "y": 104,
+              "text": "Open-Meteo",
+              "text_font": "usp_i18n_24",
+              "text_color": 3900150
+            }
+          },
+          {
+            "label": {
+              "id": "weather_provider_note_label",
+              "x": 18,
+              "y": 148,
+              "width": 488,
+              "long_mode": "WRAP",
+              "text": "Weather data · CC BY 4.0",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          },
+          {
+            "label": {
+              "id": "weather_indoor_label",
+              "x": 18,
+              "y": 178,
+              "width": 320,
+              "height": 42,
+              "long_mode": "WRAP",
+              "text": "Indoor: sensor not connected",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          },
+          {
+            "button": {
+              "id": "weather_room_button",
+              "x": 350,
+              "y": 172,
+              "width": 156,
+              "height": 48,
+              "radius": 10,
+              "bg_color": 1451578,
+              "text": "ROOM 24H",
+              "text_font": "usp_i18n_18",
+              "on_click": [
+                {
+                  "script.execute": {
+                    "id": "navigate_lcd_page",
+                    "page": 10
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "x": 28,
+        "y": 354,
+        "width": 226,
+        "height": 174,
+        "scrollable": false,
+        "radius": 16,
+        "bg_color": 792616,
+        "border_width": 1,
+        "border_color": 2506071,
+        "widgets": [
+          {
+            "label": {
+              "id": "weather_day0_date",
+              "x": 14,
+              "y": 12,
+              "text": "--.--",
+              "text_font": "usp_i18n_20",
+              "text_color": 3900150
+            }
+          },
+          {
+            "label": {
+              "id": "weather_day0_condition",
+              "x": 14,
+              "y": 48,
+              "width": 198,
+              "height": 34,
+              "long_mode": "WRAP",
+              "text": "--",
+              "text_font": "usp_i18n_18",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "weather_day0_temp",
+              "x": 14,
+              "y": 88,
+              "text": "-- / --°C",
+              "text_font": "usp_i18n_24",
+              "text_color": 4906624
+            }
+          },
+          {
+            "label": {
+              "id": "weather_day0_rain",
+              "x": 14,
+              "y": 132,
+              "width": 198,
+              "height": 28,
+              "long_mode": "WRAP",
+              "text": "Precip: --%",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          }
+        ]
+      },
+      {
+        "x": 270,
+        "y": 354,
+        "width": 226,
+        "height": 174,
+        "scrollable": false,
+        "radius": 16,
+        "bg_color": 792616,
+        "border_width": 1,
+        "border_color": 2506071,
+        "widgets": [
+          {
+            "label": {
+              "id": "weather_day1_date",
+              "x": 14,
+              "y": 12,
+              "text": "--.--",
+              "text_font": "usp_i18n_20",
+              "text_color": 3900150
+            }
+          },
+          {
+            "label": {
+              "id": "weather_day1_condition",
+              "x": 14,
+              "y": 48,
+              "width": 198,
+              "height": 34,
+              "long_mode": "WRAP",
+              "text": "--",
+              "text_font": "usp_i18n_18",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "weather_day1_temp",
+              "x": 14,
+              "y": 88,
+              "text": "-- / --°C",
+              "text_font": "usp_i18n_24",
+              "text_color": 4906624
+            }
+          },
+          {
+            "label": {
+              "id": "weather_day1_rain",
+              "x": 14,
+              "y": 132,
+              "width": 198,
+              "height": 28,
+              "long_mode": "WRAP",
+              "text": "Precip: --%",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          }
+        ]
+      },
+      {
+        "x": 512,
+        "y": 354,
+        "width": 226,
+        "height": 174,
+        "scrollable": false,
+        "radius": 16,
+        "bg_color": 792616,
+        "border_width": 1,
+        "border_color": 2506071,
+        "widgets": [
+          {
+            "label": {
+              "id": "weather_day2_date",
+              "x": 14,
+              "y": 12,
+              "text": "--.--",
+              "text_font": "usp_i18n_20",
+              "text_color": 3900150
+            }
+          },
+          {
+            "label": {
+              "id": "weather_day2_condition",
+              "x": 14,
+              "y": 48,
+              "width": 198,
+              "height": 34,
+              "long_mode": "WRAP",
+              "text": "--",
+              "text_font": "usp_i18n_18",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "weather_day2_temp",
+              "x": 14,
+              "y": 88,
+              "text": "-- / --°C",
+              "text_font": "usp_i18n_24",
+              "text_color": 4906624
+            }
+          },
+          {
+            "label": {
+              "id": "weather_day2_rain",
+              "x": 14,
+              "y": 132,
+              "width": 198,
+              "height": 28,
+              "long_mode": "WRAP",
+              "text": "Precip: --%",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          }
+        ]
+      },
+      {
+        "x": 754,
+        "y": 354,
+        "width": 242,
+        "height": 174,
+        "scrollable": false,
+        "radius": 16,
+        "bg_color": 792616,
+        "border_width": 1,
+        "border_color": 2506071,
+        "widgets": [
+          {
+            "label": {
+              "id": "weather_day3_date",
+              "x": 14,
+              "y": 12,
+              "text": "--.--",
+              "text_font": "usp_i18n_20",
+              "text_color": 3900150
+            }
+          },
+          {
+            "label": {
+              "id": "weather_day3_condition",
+              "x": 14,
+              "y": 48,
+              "width": 198,
+              "height": 34,
+              "long_mode": "WRAP",
+              "text": "--",
+              "text_font": "usp_i18n_18",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "weather_day3_temp",
+              "x": 14,
+              "y": 88,
+              "text": "-- / --°C",
+              "text_font": "usp_i18n_24",
+              "text_color": 4906624
+            }
+          },
+          {
+            "label": {
+              "id": "weather_day3_rain",
+              "x": 14,
+              "y": 132,
+              "width": 198,
+              "height": 28,
+              "long_mode": "WRAP",
+              "text": "Precip: --%",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          }
+        ]
+      }
+    ],
+    "page_weather_full": [
+      {
+        "id": "fullscreen_weather_now_card",
+        "x": 28,
+        "y": 94,
+        "width": 470,
+        "height": 230,
+        "scrollable": false,
+        "radius": 16,
+        "bg_color": 792616,
+        "border_width": 1,
+        "border_color": 2506071,
+        "widgets": [
+          {
+            "label": {
+              "id": "fullscreen_weather_now_title_label",
+              "x": 18,
+              "y": 14,
+              "text": "NOW",
+              "text_font": "usp_i18n_20",
+              "text_color": 9479352
+            }
+          },
+          {
+            "label": {
+              "id": "fullscreen_weather_temp_label",
+              "x": 18,
+              "y": 52,
+              "text": "--°C",
+              "text_font": "usp_i18n_36",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "fullscreen_weather_condition_label",
+              "x": 180,
+              "y": 54,
+              "width": 270,
+              "height": 52,
+              "long_mode": "WRAP",
+              "text": "--",
+              "text_font": "usp_i18n_26",
+              "text_color": 4906624
+            }
+          },
+          {
+            "label": {
+              "id": "fullscreen_weather_feels_label",
+              "x": 18,
+              "y": 112,
+              "width": 420,
+              "height": 30,
+              "long_mode": "WRAP",
+              "text": "Feels like: --°C",
+              "text_font": "usp_i18n_20",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "fullscreen_weather_humidity_label",
+              "x": 18,
+              "y": 144,
+              "width": 210,
+              "height": 24,
+              "text": "Humidity: --%",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          },
+          {
+            "label": {
+              "id": "fullscreen_weather_wind_label",
+              "x": 238,
+              "y": 144,
+              "width": 210,
+              "height": 24,
+              "text": "Wind: -- km/h",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          },
+          {
+            "label": {
+              "id": "fullscreen_weather_indoor_label",
+              "x": 18,
+              "y": 188,
+              "width": 280,
+              "height": 28,
+              "long_mode": "DOT",
+              "text": "Indoor: sensor not connected",
+              "text_font": "usp_i18n_18",
+              "text_color": 9741240
+            }
+          },
+          {
+            "button": {
+              "id": "fullscreen_weather_room_button",
+              "x": 315,
+              "y": 172,
+              "width": 135,
+              "height": 48,
+              "radius": 9,
+              "bg_color": 1451578,
+              "text": "ROOM 24H",
+              "text_font": "usp_i18n_18",
+              "on_click": [
+                {
+                  "script.execute": {
+                    "id": "navigate_lcd_page",
+                    "page": 10
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "x": 518,
+        "y": 94,
+        "width": 478,
+        "height": 220,
+        "scrollable": false,
+        "radius": 16,
+        "bg_color": 792616,
+        "border_width": 1,
+        "border_color": 2506071,
+        "widgets": [
+          {
+            "label": {
+              "id": "fullscreen_weather_forecast_title_label",
+              "x": 18,
+              "y": 14,
+              "text": "FORECAST",
+              "text_font": "usp_i18n_20",
+              "text_color": 9479352
+            }
+          },
+          {
+            "label": {
+              "id": "fullscreen_weather_updated_label",
+              "x": 18,
+              "y": 60,
+              "width": 430,
+              "height": 34,
+              "long_mode": "WRAP",
+              "text": "Дані на: --",
+              "text_font": "usp_i18n_24",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "fullscreen_weather_provider_label",
+              "x": 18,
+              "y": 100,
+              "width": 430,
+              "height": 26,
+              "text": "Open-Meteo",
+              "text_font": "usp_i18n_20",
+              "text_color": 3900150
+            }
+          },
+          {
+            "button": {
+              "id": "weather_full_hourly_button",
+              "x": 18,
+              "y": 132,
+              "width": 126,
+              "height": 48,
+              "radius": 10,
+              "bg_color": 1451578,
+              "text": "HOURLY",
+              "text_font": "usp_i18n_18",
+              "on_click": [
+                {
+                  "lvgl.page.show": {
+                    "id": "page_weather_hourly",
+                    "animation": "NONE"
+                  }
+                },
+                {
+                  "script.execute": "refresh_weather_forecast_ui"
+                }
+              ]
+            }
+          },
+          {
+            "button": {
+              "id": "weather_full_daily_button",
+              "x": 154,
+              "y": 132,
+              "width": 126,
+              "height": 48,
+              "radius": 10,
+              "bg_color": 1451578,
+              "text": "7 DAYS",
+              "text_font": "usp_i18n_18",
+              "on_click": [
+                {
+                  "lvgl.page.show": {
+                    "id": "page_weather_daily",
+                    "animation": "NONE"
+                  }
+                },
+                {
+                  "script.execute": "refresh_weather_forecast_ui"
+                }
+              ]
+            }
+          },
+          {
+            "button": {
+              "id": "weather_full_details_button",
+              "x": 290,
+              "y": 132,
+              "width": 126,
+              "height": 48,
+              "radius": 10,
+              "bg_color": 1451578,
+              "text": "DETAILS",
+              "text_font": "usp_i18n_18",
+              "on_click": [
+                {
+                  "lvgl.page.show": {
+                    "id": "page_weather_details",
+                    "animation": "NONE"
+                  }
+                },
+                {
+                  "script.execute": "refresh_weather_forecast_ui"
+                }
+              ]
+            }
+          },
+          {
+            "label": {
+              "id": "weather_full_attribution_label",
+              "x": 18,
+              "y": 184,
+              "width": 430,
+              "height": 28,
+              "long_mode": "DOT",
+              "text": "Weather data / CC BY 4.0",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          }
+        ]
+      },
+      {
+        "x": 28,
+        "y": 342,
+        "width": 228,
+        "height": 230,
+        "scrollable": false,
+        "radius": 16,
+        "bg_color": 792616,
+        "border_width": 1,
+        "border_color": 2506071,
+        "widgets": [
+          {
+            "label": {
+              "id": "full_weather_day0_date",
+              "x": 16,
+              "y": 14,
+              "text": "--.--",
+              "text_font": "usp_i18n_24",
+              "text_color": 3900150
+            }
+          },
+          {
+            "label": {
+              "id": "full_weather_day0_condition",
+              "x": 16,
+              "y": 58,
+              "width": 196,
+              "height": 44,
+              "long_mode": "WRAP",
+              "text": "--",
+              "text_font": "usp_i18n_20",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "full_weather_day0_temp",
+              "x": 16,
+              "y": 112,
+              "width": 196,
+              "text": "-- / --°C",
+              "text_font": "usp_i18n_28",
+              "text_color": 4906624
+            }
+          },
+          {
+            "label": {
+              "id": "full_weather_day0_rain",
+              "x": 16,
+              "y": 176,
+              "width": 196,
+              "height": 28,
+              "long_mode": "WRAP",
+              "text": "Precip: --%",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          }
+        ]
+      },
+      {
+        "x": 272,
+        "y": 342,
+        "width": 228,
+        "height": 230,
+        "scrollable": false,
+        "radius": 16,
+        "bg_color": 792616,
+        "border_width": 1,
+        "border_color": 2506071,
+        "widgets": [
+          {
+            "label": {
+              "id": "full_weather_day1_date",
+              "x": 16,
+              "y": 14,
+              "text": "--.--",
+              "text_font": "usp_i18n_24",
+              "text_color": 3900150
+            }
+          },
+          {
+            "label": {
+              "id": "full_weather_day1_condition",
+              "x": 16,
+              "y": 58,
+              "width": 196,
+              "height": 44,
+              "long_mode": "WRAP",
+              "text": "--",
+              "text_font": "usp_i18n_20",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "full_weather_day1_temp",
+              "x": 16,
+              "y": 112,
+              "width": 196,
+              "text": "-- / --°C",
+              "text_font": "usp_i18n_28",
+              "text_color": 4906624
+            }
+          },
+          {
+            "label": {
+              "id": "full_weather_day1_rain",
+              "x": 16,
+              "y": 176,
+              "width": 196,
+              "height": 28,
+              "long_mode": "WRAP",
+              "text": "Precip: --%",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          }
+        ]
+      },
+      {
+        "x": 516,
+        "y": 342,
+        "width": 228,
+        "height": 230,
+        "scrollable": false,
+        "radius": 16,
+        "bg_color": 792616,
+        "border_width": 1,
+        "border_color": 2506071,
+        "widgets": [
+          {
+            "label": {
+              "id": "full_weather_day2_date",
+              "x": 16,
+              "y": 14,
+              "text": "--.--",
+              "text_font": "usp_i18n_24",
+              "text_color": 3900150
+            }
+          },
+          {
+            "label": {
+              "id": "full_weather_day2_condition",
+              "x": 16,
+              "y": 58,
+              "width": 196,
+              "height": 44,
+              "long_mode": "WRAP",
+              "text": "--",
+              "text_font": "usp_i18n_20",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "full_weather_day2_temp",
+              "x": 16,
+              "y": 112,
+              "width": 196,
+              "text": "-- / --°C",
+              "text_font": "usp_i18n_28",
+              "text_color": 4906624
+            }
+          },
+          {
+            "label": {
+              "id": "full_weather_day2_rain",
+              "x": 16,
+              "y": 176,
+              "width": 196,
+              "height": 28,
+              "long_mode": "WRAP",
+              "text": "Precip: --%",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          }
+        ]
+      },
+      {
+        "x": 760,
+        "y": 342,
+        "width": 228,
+        "height": 230,
+        "scrollable": false,
+        "radius": 16,
+        "bg_color": 792616,
+        "border_width": 1,
+        "border_color": 2506071,
+        "widgets": [
+          {
+            "label": {
+              "id": "full_weather_day3_date",
+              "x": 16,
+              "y": 14,
+              "text": "--.--",
+              "text_font": "usp_i18n_24",
+              "text_color": 3900150
+            }
+          },
+          {
+            "label": {
+              "id": "full_weather_day3_condition",
+              "x": 16,
+              "y": 58,
+              "width": 196,
+              "height": 44,
+              "long_mode": "WRAP",
+              "text": "--",
+              "text_font": "usp_i18n_20",
+              "text_color": 16777215
+            }
+          },
+          {
+            "label": {
+              "id": "full_weather_day3_temp",
+              "x": 16,
+              "y": 112,
+              "width": 196,
+              "text": "-- / --°C",
+              "text_font": "usp_i18n_28",
+              "text_color": 4906624
+            }
+          },
+          {
+            "label": {
+              "id": "full_weather_day3_rain",
+              "x": 16,
+              "y": 176,
+              "width": 196,
+              "height": 28,
+              "long_mode": "WRAP",
+              "text": "Precip: --%",
+              "text_font": "usp_i18n_18",
+              "text_color": 9479352
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

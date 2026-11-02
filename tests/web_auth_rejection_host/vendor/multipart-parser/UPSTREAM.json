@@ -1,0 +1,10 @@
+{
+  "component": "zorxx/multipart-parser",
+  "version": "1.0.1",
+  "test_only": true,
+  "sha256": {
+    "multipart_parser.c": "47861a5a691c98a51683cc6f5395cc049b707a28aa6b9e5d22020481f1f268fa",
+    "LICENSE": "145b9310a29764bc3081c05c6da87c442a579adfcbfc6f374619f1f1b6f2f458",
+    "multipart_parser.h": "ca2422e845422a1d8c9a753d483d3d0844e16195458ac699394f3f3414157fe7"
+  }
+}

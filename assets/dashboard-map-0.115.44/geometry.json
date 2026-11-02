@@ -1,0 +1,326 @@
+{
+  "source": "assets/alert-map-0.115.0",
+  "source_commit": "1eca9d6972b9eba4cec9f308f53da87c232abfc3",
+  "source_height": 330,
+  "source_width": 580,
+  "views": {
+    "dashboard": {
+      "height": 271,
+      "mask_dir": "masks-binary",
+      "outline": "alerts-map-outline.png",
+      "regions": {
+        "UA-05": {
+          "height": 62,
+          "width": 59,
+          "x": 157,
+          "y": 87
+        },
+        "UA-07": {
+          "height": 54,
+          "width": 54,
+          "x": 76,
+          "y": 20
+        },
+        "UA-09": {
+          "height": 73,
+          "width": 50,
+          "x": 382,
+          "y": 81
+        },
+        "UA-12": {
+          "height": 56,
+          "width": 86,
+          "x": 277,
+          "y": 109
+        },
+        "UA-14": {
+          "height": 77,
+          "width": 55,
+          "x": 354,
+          "y": 108
+        },
+        "UA-18": {
+          "height": 67,
+          "width": 55,
+          "x": 153,
+          "y": 30
+        },
+        "UA-21": {
+          "height": 39,
+          "width": 54,
+          "x": 45,
+          "y": 113
+        },
+        "UA-23": {
+          "height": 60,
+          "width": 65,
+          "x": 304,
+          "y": 144
+        },
+        "UA-26": {
+          "height": 59,
+          "width": 46,
+          "x": 75,
+          "y": 99
+        },
+        "UA-32": {
+          "height": 77,
+          "width": 62,
+          "x": 198,
+          "y": 34
+        },
+        "UA-35": {
+          "height": 50,
+          "width": 90,
+          "x": 208,
+          "y": 107
+        },
+        "UA-43": {
+          "height": 61,
+          "width": 89,
+          "x": 267,
+          "y": 204
+        },
+        "UA-46": {
+          "height": 63,
+          "width": 61,
+          "x": 56,
+          "y": 62
+        },
+        "UA-48": {
+          "height": 59,
+          "width": 63,
+          "x": 218,
+          "y": 140
+        },
+        "UA-51": {
+          "height": 98,
+          "width": 67,
+          "x": 175,
+          "y": 140
+        },
+        "UA-53": {
+          "height": 58,
+          "width": 73,
+          "x": 259,
+          "y": 66
+        },
+        "UA-56": {
+          "height": 63,
+          "width": 57,
+          "x": 108,
+          "y": 21
+        },
+        "UA-59": {
+          "height": 73,
+          "width": 59,
+          "x": 277,
+          "y": 7
+        },
+        "UA-61": {
+          "height": 57,
+          "width": 36,
+          "x": 100,
+          "y": 75
+        },
+        "UA-63": {
+          "height": 62,
+          "width": 70,
+          "x": 317,
+          "y": 69
+        },
+        "UA-65": {
+          "height": 60,
+          "width": 82,
+          "x": 245,
+          "y": 161
+        },
+        "UA-68": {
+          "height": 70,
+          "width": 38,
+          "x": 131,
+          "y": 64
+        },
+        "UA-71": {
+          "height": 59,
+          "width": 72,
+          "x": 204,
+          "y": 75
+        },
+        "UA-74": {
+          "height": 66,
+          "width": 65,
+          "x": 224,
+          "y": 7
+        },
+        "UA-77": {
+          "height": 32,
+          "width": 56,
+          "x": 105,
+          "y": 126
+        }
+      },
+      "scale": 0.82,
+      "width": 476
+    },
+    "fullscreen": {
+      "height": 488,
+      "mask_dir": "fullscreen-masks-binary",
+      "outline": "fullscreen-alerts-map-outline.png",
+      "regions": {
+        "UA-05": {
+          "height": 111,
+          "width": 106,
+          "x": 283,
+          "y": 157
+        },
+        "UA-07": {
+          "height": 100,
+          "width": 97,
+          "x": 138,
+          "y": 35
+        },
+        "UA-09": {
+          "height": 132,
+          "width": 90,
+          "x": 688,
+          "y": 146
+        },
+        "UA-12": {
+          "height": 100,
+          "width": 154,
+          "x": 500,
+          "y": 197
+        },
+        "UA-14": {
+          "height": 139,
+          "width": 99,
+          "x": 638,
+          "y": 194
+        },
+        "UA-18": {
+          "height": 123,
+          "width": 99,
+          "x": 277,
+          "y": 53
+        },
+        "UA-21": {
+          "height": 71,
+          "width": 98,
+          "x": 81,
+          "y": 203
+        },
+        "UA-23": {
+          "height": 109,
+          "width": 119,
+          "x": 547,
+          "y": 259
+        },
+        "UA-26": {
+          "height": 107,
+          "width": 82,
+          "x": 135,
+          "y": 177
+        },
+        "UA-32": {
+          "height": 138,
+          "width": 112,
+          "x": 357,
+          "y": 62
+        },
+        "UA-35": {
+          "height": 90,
+          "width": 163,
+          "x": 374,
+          "y": 192
+        },
+        "UA-43": {
+          "height": 110,
+          "width": 161,
+          "x": 481,
+          "y": 368
+        },
+        "UA-46": {
+          "height": 113,
+          "width": 109,
+          "x": 101,
+          "y": 112
+        },
+        "UA-48": {
+          "height": 105,
+          "width": 114,
+          "x": 393,
+          "y": 253
+        },
+        "UA-51": {
+          "height": 176,
+          "width": 121,
+          "x": 315,
+          "y": 253
+        },
+        "UA-53": {
+          "height": 105,
+          "width": 133,
+          "x": 465,
+          "y": 118
+        },
+        "UA-56": {
+          "height": 114,
+          "width": 103,
+          "x": 194,
+          "y": 37
+        },
+        "UA-59": {
+          "height": 133,
+          "width": 108,
+          "x": 499,
+          "y": 12
+        },
+        "UA-61": {
+          "height": 103,
+          "width": 67,
+          "x": 180,
+          "y": 135
+        },
+        "UA-63": {
+          "height": 113,
+          "width": 127,
+          "x": 571,
+          "y": 124
+        },
+        "UA-65": {
+          "height": 108,
+          "width": 148,
+          "x": 442,
+          "y": 290
+        },
+        "UA-68": {
+          "height": 126,
+          "width": 68,
+          "x": 237,
+          "y": 115
+        },
+        "UA-71": {
+          "height": 106,
+          "width": 129,
+          "x": 368,
+          "y": 135
+        },
+        "UA-74": {
+          "height": 120,
+          "width": 117,
+          "x": 404,
+          "y": 12
+        },
+        "UA-77": {
+          "height": 58,
+          "width": 101,
+          "x": 189,
+          "y": 226
+        }
+      },
+      "scale": 1.48,
+      "width": 858
+    }
+  }
+}

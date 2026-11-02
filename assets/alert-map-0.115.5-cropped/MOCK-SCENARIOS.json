@@ -1,0 +1,51 @@
+{
+  "version": "0.115.1-dev",
+  "colors": {
+    "normal": "#1F8A4C",
+    "drone": "#F5BE26",
+    "missile": "#DC3545",
+    "no_data": "#34424E"
+  },
+  "priority": [
+    "MISSILE",
+    "DRONE",
+    "NORMAL",
+    "NO_DATA"
+  ],
+  "combined_rule": "DRONE + MISSILE renders MISSILE/red",
+  "scenarios": {
+    "drone": {
+      "file": "alerts-map-drone.png",
+      "sha256": "4099c6336a3beb0063434112396d07b2eb22b5a5f4aad9a404647c3fba06ae66",
+      "states": {
+        "UA-32": "DRONE",
+        "UA-74": "DRONE",
+        "UA-59": "DRONE",
+        "UA-51": "DRONE"
+      }
+    },
+    "missile": {
+      "file": "alerts-map-missile.png",
+      "sha256": "64c32312ce7233a1e21cf45f4824b1ff7f42601517651347a94024be9b3e1e66",
+      "states": {
+        "UA-12": "MISSILE",
+        "UA-53": "MISSILE",
+        "UA-63": "MISSILE"
+      }
+    },
+    "mixed": {
+      "file": "alerts-map-mixed.png",
+      "sha256": "67273666866294cd369414b8e7eded316fce72efe69c5145d2dc4c8acdaa32a3",
+      "states": {
+        "UA-32": "MISSILE",
+        "UA-74": "DRONE",
+        "UA-59": "DRONE",
+        "UA-51": "DRONE",
+        "UA-12": "MISSILE",
+        "UA-53": "MISSILE",
+        "UA-63": "MISSILE",
+        "UA-09": "NO_DATA"
+      }
+    }
+  }
+}

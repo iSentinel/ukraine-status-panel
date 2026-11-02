@@ -1,0 +1,64 @@
+// Exact loop/lock methods run with an observable host semaphore replacement.
+#include <cassert>
+#include <cstdint>
+#include <iostream>
+template<typename... T> void log_values(T&&...) {}
+static constexpr const char *TAG="wifi.scan.test";
+#define ESP_LOGI(...) log_values(__VA_ARGS__)
+using TickType_t=uint32_t;
+static constexpr int pdTRUE=1;
+#define pdMS_TO_TICKS(ms) (ms)
+static bool busy=true;
+static uint32_t now=250,requested_wait=999;
+int xSemaphoreTake(void *,TickType_t wait) {
+  requested_wait=wait;return busy?0:pdTRUE;
+}
+void xSemaphoreGive(void *) {}
+namespace esphome::usp_wifi_scan {
+uint32_t millis() {return now;}
+enum class WifiScanState:uint8_t {IDLE,START_PENDING,SCANNING,READY,ERROR};
+class WifiScanApi {
+ public:
+  void *mutex_{reinterpret_cast<void *>(1)};
+  WifiScanState state_{WifiScanState::START_PENDING};
+  uint32_t scan_requested_ms_{},scan_started_ms_{};
+  @DEFER_DECL@
+  int radio_starts{};
+  uint16_t scan_count_{},hidden_count_{};
+  bool publish_results_() {return false;}
+  void release_high_performance_() {}
+  uint32_t radio_generation_{},scan_generation_{};
+  void expire_scan_locked_() {}
+  void consume_radio_failure_() {}
+  bool update_scan_lease_() {return false;}
+  void loop();
+  @LOCK_DECL@
+  void unlock_() const;
+  void start_radio_scan_() {++radio_starts;}
+};
+@METHODS@
+}
+/** A busy HTTP owner must not delay the loop or change pending state. */
+void contention_case() {
+  esphome::usp_wifi_scan::WifiScanApi scan;
+  scan.loop();
+  assert(scan.radio_starts==0);
+  assert(scan.state_==esphome::usp_wifi_scan::WifiScanState::START_PENDING);
+  assert(requested_wait==0);
+  busy=false;now=249;scan.loop();assert(scan.radio_starts==0);
+  now=250;scan.loop();assert(scan.radio_starts==1 && scan.scan_started_ms_==250);
+  scan.loop();assert(scan.radio_starts==1);
+  scan.lock_();assert(requested_wait==pdMS_TO_TICKS(100));
+}
+/** Deferred start retains wrap-safe timing across the counter boundary. */
+void wrap_case() {
+  esphome::usp_wifi_scan::WifiScanApi scan;
+  scan.scan_requested_ms_=UINT32_MAX-200;
+  busy=false;now=48;scan.loop();assert(scan.radio_starts==0);
+  now=49;scan.loop();assert(scan.radio_starts==1);
+  scan.mutex_=nullptr;requested_wait=999;scan.loop();assert(requested_wait==999);
+}
+int main() {
+  contention_case();wrap_case();
+  std::cout<<"BF12_LOOP_NATIVE=PASS loop_wait0 default100 contention defer250 one_start wrap null_mutex; no radio\n";
+}

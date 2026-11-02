@@ -1,0 +1,110 @@
+:root {
+  color-scheme: dark;
+  --color-primary:#1e293b;
+  --color-secondary:#334155;
+  --color-accent:#22c55e;
+  --color-background:#0f172a;
+  --color-background-deep:#07111f;
+  --color-foreground:#f8fafc;
+  --color-card:#1b2336;
+  --color-muted:#272f42;
+  --color-muted-foreground:#94a3b8;
+  --color-border:#475569;
+  --color-focus:#ffffff;
+  --color-info:#60a5fa;
+  --color-warning:#f59e0b;
+  --color-destructive:#ef4444;
+  --space-xs:2px;
+  --space-sm:4px;
+  --space-md:8px;
+  --space-lg:12px;
+  --space-xl:16px;
+  --space-2xl: 24px;
+  --radius-sm:10px;
+  --radius-md:14px;
+  --motion-fast:140ms;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--color-background-deep);
+  color: var(--color-foreground);
+}
+* { box-sizing: border-box; }
+html { min-width: 320px; background: var(--color-background-deep); }
+body { margin: 0; min-height: 100vh; min-width: 320px; overflow-x: hidden; background: var(--color-background); }
+button, input, select { font: inherit; }
+button, select, input { min-height: 44px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-primary); color: var(--color-foreground); transition: background-color var(--motion-fast) ease, border-color var(--motion-fast) ease, opacity var(--motion-fast) ease; }
+button { cursor: pointer; padding: 0 var(--space-lg); touch-action: manipulation; transition: background-color var(--motion-fast) ease, border-color var(--motion-fast) ease, opacity var(--motion-fast) ease, transform 120ms cubic-bezier(.23,1,.32,1); }
+button:hover { border-color: var(--color-info); background: var(--color-secondary); }
+button:active { background: #3b4d66; transform: scale(.98); }
+button:disabled, input:disabled, select:disabled { opacity: .68; cursor: not-allowed; }
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+input, select { width: 100%; padding: var(--space-md) 10px; }
+input::placeholder { color: var(--color-muted-foreground); opacity: 1; }
+input[type="range"] { min-height: 44px; padding: 0; }
+.usp-shell { width: min(1180px, calc(100% - 24px)); margin: 0 auto; padding: 22px 0 42px; }
+.usp-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-xl); margin-bottom: 18px; }
+.usp-title { margin: 0; font-size: 1.5rem; line-height: 1.08; text-wrap: balance; }
+.usp-subtitle { color: #a9bdd4; margin-top: var(--space-md); font-size: .95rem; line-height: 1.5; }
+.usp-connection { display: inline-flex; align-items: center; gap: 7px; color: #a9bdd4; font-size: .85rem; white-space: nowrap; }
+.usp-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--color-warning); }
+.usp-dot.online { background: var(--color-accent); }
+.usp-dot.offline { background: var(--color-destructive); }
+.usp-group { margin-top: var(--space-xl); }
+.usp-group h2 { margin: 0 0 10px; font-size: 1rem; font-weight: 700; letter-spacing: .02em; color: #dbeafe; }
+.usp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); gap: 10px; }
+.usp-card { min-height: 92px; min-width: 0; padding: 13px; border: 1px solid #263d57; border-radius: var(--radius-md); background: var(--color-card); }
+.usp-card.control { min-height: 122px; }
+.usp-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-lg); }
+.usp-name { color: #b6c7da; font-size: .86rem; line-height: 1.45; margin-bottom: 9px; overflow-wrap: anywhere; }
+.usp-value { font-size: 1.05rem; font-weight: 650; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.usp-muted { color: var(--color-muted-foreground); font-size: .8rem; line-height: 1.5; margin-top: 7px; overflow-wrap: anywhere; }
+.usp-actions { display: flex; align-items: center; gap: var(--space-md); margin-top: 9px; }
+.usp-actions>*{flex:1 1 0;min-width:0}
+.usp-actions button{overflow-wrap:anywhere}
+.usp-pill { display: inline-flex; align-items: center; max-width: 100%; min-height: 28px; padding: 4px var(--space-md); border-radius: 999px; background: var(--color-muted); color: #dbeafe; font-size: .8rem; line-height: 1.35; white-space: normal; }
+.usp-pill.good { background: rgba(34,197,94,.16); color: #bbf7d0; }
+.usp-pill.warn { background: rgba(245,158,11,.17); color: #fde68a; }
+.usp-pill.bad { background: rgba(239,68,68,.17); color: #fecaca; }
+.usp-pill.quiet { background: var(--color-muted); color: #cbd5e1; border: 1px solid var(--color-border); }
+.usp-error { margin: 14px 0; padding: 10px var(--space-lg); border: 1px solid #b91c1c; border-radius: var(--radius-sm); background: rgba(127,29,29,.28); color: #fecaca; display: none; line-height: 1.5; }
+.usp-error.show { display: block; }
+.usp-footer { color: var(--color-muted-foreground); font-size: .8rem; margin-top: 22px; text-align: center; }
+.usp-tabs { display: flex; gap: var(--space-md); overflow-x: auto; padding: 3px 2px 9px; margin: 0 0 var(--space-md); scrollbar-width: thin; scroll-padding-inline: 2px; }
+.usp-tab { flex: 0 0 auto; min-height: 44px; padding: 0 var(--space-xl); border-radius: var(--radius-sm); border-color: transparent; color: #b6c7da; background: transparent; }
+.usp-tab:hover { background: var(--color-muted); border-color: var(--color-border); }
+.usp-tab.active { border-color: var(--color-border); border-bottom: 2px solid var(--color-info); background: var(--color-muted); color: var(--color-foreground); }
+.usp-finder-card { min-height: 0; }
+.usp-finder-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.usp-field { position: relative; display: block; min-width: 0; }
+.usp-suggestions { position: static; margin-top: 4px; max-height: 230px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: #111f33; box-shadow: 0 14px 34px rgba(0,0,0,.38); }
+.usp-suggestions:empty{display:none}
+.usp-suggestion { display: block; width: 100%; min-height: 44px; border: 0; border-radius: 0; text-align: left; padding: 9px 10px; background: #111f33; color: #dbeafe; }
+.usp-suggestion:hover, .usp-suggestion:focus-visible { background: #1d3857; }
+.usp-primary { border-color: #4f8bc5; background: #1d4f82; }
+.usp-primary:hover { background: #245f99; }
+.usp-note { margin: 4px 0 var(--space-lg); padding: 10px var(--space-lg); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-card); color: #a9bdd4; font-size: .86rem; line-height: 1.5; overflow-wrap: anywhere; }
+.usp-wifi-list { display: grid; gap: 7px; margin-top: 10px; }
+.usp-wifi-network { display: flex; align-items: center; justify-content: space-between; gap: var(--space-lg); width: 100%; text-align: left; }
+.usp-wifi-main { min-width: 0; overflow-wrap: anywhere; font-weight: 650; }
+.usp-wifi-meta { flex: 0 0 auto; color: #a9bdd4; font-size: .8rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+.usp-hidden-ssid { margin-top: 10px; }
+.usp-hidden-ssid > summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: #b6c7da; font-size: .84rem; touch-action: manipulation; }
+@media (max-width: 640px) {
+  .usp-shell { width: min(100% - 32px, 1180px); padding-top: 14px; }
+  .usp-head { flex-direction: column; }
+  .usp-grid { grid-template-columns: 1fr; }
+  .usp-card { min-height: 82px; }
+  .usp-tabs { margin-left: -2px; margin-right: -2px; }
+  .usp-tab { padding: 0 var(--space-lg); }
+  .usp-finder-fields { grid-template-columns: 1fr; }
+  .usp-actions { flex-wrap: wrap; }
+  .usp-actions > * { flex-basis: 100%; }
+  .usp-wifi-network { align-items: flex-start; flex-direction: column; gap: var(--space-sm); }
+  .usp-wifi-meta { white-space: normal; }
+}
+@media (min-width: 768px) { .usp-shell { width: min(1180px, calc(100% - 32px)); } }
+@media (min-width: 1024px) { .usp-shell { width: min(1180px, calc(100% - 48px)); } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}
+
+.usp-pill[hidden] { display: none; }

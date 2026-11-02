@@ -1,0 +1,113 @@
+#include <cassert>
+#include <cstdint>
+#include <cstring>
+#include <iostream>
+#include <string>
+#include "usp_wifi_status_text.h"
+#include "usp_neptun_status_text.h"
+
+// Only the source client and decimal helper are replaced; callbacks stay verbatim.
+#define id(name) name
+struct Counts {
+  uint16_t uav{}, fpv{}, recon{}, missile{}, ballistic{}, kab{}, mig31k{}, unknown{}, total{};
+};
+struct Client {
+  bool alerts{}, stale{}, fetch{}, threats{};
+  uint8_t level{};
+  Counts counts{};
+  bool alerts_valid() const { return alerts; }
+  uint8_t region_alert_level(uint32_t) const { return level; }
+  bool alerts_stale() const { return stale; }
+  bool alerts_last_fetch_ok() const { return fetch; }
+  bool valid() const { return threats; }
+  Counts region_threat_counts(uint32_t) const { return counts; }
+};
+Client neptun_client;
+uint8_t ui_language{};
+uint32_t ui_selected_region_id{31};
+namespace usp_ui {
+std::string unsigned_decimal(unsigned value) { return std::to_string(value); }
+}
+
+void check_usp_wifi_status_text() {
+ using usp_wifi_status_text::Label;
+ const Label keys[] = {Label::ONLINE, Label::OFFLINE};
+ const char *gold[2][3] = {
+  {"В мережі", "В сети", "Online"},
+  {"Офлайн", "Офлайн", "Offline"},
+ };
+ for(unsigned language=0; language<256; ++language) {
+  const unsigned li=language<2?language:2;
+  for(unsigned key=0;key<2;++key) assert(std::strcmp(usp_wifi_status_text::label(language,keys[key]),gold[key][li])==0);
+  for(unsigned key : {2u,255u}) assert(std::strcmp(usp_wifi_status_text::label(language,static_cast<Label>(key)),"")==0);
+ }
+}
+
+void check_usp_neptun_status_text() {
+ using usp_neptun_status_text::Label;
+ const Label keys[] = {Label::AIR_ALERT, Label::AIR_THREAT, Label::NO_ACTIVE, Label::CACHED_SUFFIX, Label::RECON};
+ const char *gold[5][3] = {
+  {"Повітряна тривога", "Воздушная тревога", "Air alert"},
+  {"Повітряна загроза", "Воздушная угроза", "Air threat"},
+  {"Немає активної", "Нет активной", "No active"},
+  {" · кеш", " · кэш", " · cached"},
+  {"РОЗВ", "РАЗВ", "REC"},
+ };
+ for(unsigned language=0; language<256; ++language) {
+  const unsigned li=language<2?language:2;
+  for(unsigned key=0;key<5;++key) assert(std::strcmp(usp_neptun_status_text::label(language,keys[key]),gold[key][li])==0);
+  for(unsigned key : {5u,255u}) assert(std::strcmp(usp_neptun_status_text::label(language,static_cast<Label>(key)),"")==0);
+ }
+}
+
+// Verbatim copied source expressions and callback bodies make the oracle independent.
+const char *wifi_before(bool connected) { return @@WIFI_BEFORE@@; }
+const char *wifi_after(bool connected) { return @@WIFI_AFTER@@; }
+std::string selected_before() {
+@@SELECTED_BEFORE@@
+}
+std::string selected_after() {
+@@SELECTED_AFTER@@
+}
+
+const Counts patterns[] = {
+  {},
+  {.uav=3,.total=3},
+  {.recon=5,.total=5},
+  {.ballistic=1,.total=1},
+  {.uav=1,.fpv=2,.recon=3,.missile=4,.ballistic=5,.kab=6,.mig31k=7,.unknown=8,.total=36},
+  {.uav=65535,.fpv=65535,.recon=65535,.missile=65535,.ballistic=65535,.kab=65535,.mig31k=65535,.unknown=65535,.total=65535},
+  {.total=1},
+  {.unknown=1,.total=1}
+};
+
+void configure(unsigned language, unsigned flags, uint8_t level, const Counts &counts) {
+  ui_language=static_cast<uint8_t>(language);
+  neptun_client.alerts=flags&1;
+  neptun_client.stale=flags&2;
+  neptun_client.fetch=flags&4;
+  neptun_client.threats=flags&8;
+  neptun_client.level=level;
+  neptun_client.counts=counts;
+}
+
+int main() {
+  check_usp_wifi_status_text();
+  check_usp_neptun_status_text();
+  unsigned selected=0, wifi=0;
+  for(unsigned language=0; language<256; ++language) {
+    ui_language=static_cast<uint8_t>(language);
+    for(bool connected : {false,true}) {
+      assert(std::strcmp(wifi_before(connected),wifi_after(connected))==0);
+      ++wifi;
+    }
+    for(unsigned flags=0; flags<16; ++flags)
+      for(uint8_t level : {0,1,2,255})
+        for(const auto &counts : patterns) {
+          configure(language,flags,level,counts);
+          assert(selected_before()==selected_after());
+          ++selected;
+        }
+  }
+  std::cout<<"SOURCE_STATUS_PREFLIGHT=PASS named=1792 invalid=1024 selected="<<selected<<" wifi="<<wifi<<"\n";
+}

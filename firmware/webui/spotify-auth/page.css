@@ -1,0 +1,13 @@
+:root{color-scheme:dark;font:16px/1.5 system-ui,sans-serif;background:#07111f;color:#e8eef7}
+*{box-sizing:border-box}body{margin:0;padding:20px}main{max-width:720px;margin:auto}
+header{margin-bottom:20px}h1{font-size:1.5rem;margin:12px 0}h2{font-size:1.125rem;margin-top:0}
+a{color:#79b8ff;text-underline-offset:3px;min-height:48px;display:inline-flex;align-items:center}
+label{display:block;margin-top:18px;margin-bottom:6px}input,textarea{width:100%;min-width:0;min-height:48px;padding:12px;border:1px solid #60738e;border-radius:6px;background:#0d1c2f;color:#e8eef7;font:inherit}
+textarea{font:14px/1.5 ui-monospace,monospace;resize:vertical}button{min-height:48px;padding:10px 16px;background:#263d57;border:1px solid #8294ad;color:#e8eef7;border-radius:6px;font:inherit;cursor:pointer}
+button:disabled{background:#152336;color:#a6b4c8;cursor:default}.actions{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}
+p{margin:8px 0}form p,footer{color:#a6b4c8;font-size:.9375rem}section{margin-top:28px;padding-top:24px;border-top:1px solid #40536d}
+#status{min-height:48px;display:flex;align-items:center}#status[data-state="connected"]{color:#70da9c}#error{color:#ffac9f}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #5da9fa;outline-offset:3px}
+footer{margin:24px 0}[hidden]{display:none!important}
+
+#hint{color:#a6b4c8}

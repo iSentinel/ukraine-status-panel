@@ -1,0 +1,18 @@
+{
+  "localize": [
+    ["PAGE_TITLE", "i18n_079"],
+    ["BACK", "i18n_080"],
+    ["HARDWARE_SECTION", "i18n_081"],
+    ["RGB_DISPLAY", "i18n_082"],
+    ["BOUNCE_BUFFER", "diag_bounce_label"],
+    ["BOUNCE_VALUE", "diag_bounce_value_label"],
+    ["TOUCH", "i18n_083"],
+    ["TOUCH_POLLING", "diag_touch_label"],
+    ["RUNTIME_SECTION", "i18n_084"],
+    ["TOUCH_TEST", "lv_touch_test"]
+  ],
+  "touch_event": [
+    ["TOUCH_OK", "on_click"],
+    ["TOUCH_TEST", "on_release"]
+  ]
+}

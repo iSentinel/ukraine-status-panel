@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "version": "0.115.407-dev",
+  "public_first_flash_hardware_validated": false,
+  "status": "validation-required",
+  "note": "0.115.407-dev root-level Wi-Fi visibility candidate is software validation only; public USB first-flash hardware validation remains required."
+}

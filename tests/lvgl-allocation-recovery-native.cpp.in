@@ -1,0 +1,155 @@
+#include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <unordered_map>
+#include <vector>
+
+constexpr unsigned MALLOC_CAP_SPIRAM = 1;
+constexpr unsigned MALLOC_CAP_8BIT = 2;
+constexpr size_t LV_DRAW_BUF_ALIGN = 16;
+#define LV_ROUND_UP(value, align) (((value) + (align) - 1) & ~((align) - 1))
+#define ESP_LOGE(...) ((void) 0)
+#define ESP_LOGW(...) ((void) 0)
+#define ESP_LOGV(...) ((void) 0)
+struct Block { size_t size; unsigned caps; };
+static std::unordered_map<void *, Block> blocks;
+static std::vector<unsigned> calls;
+static bool fail_psram, fail_internal;
+
+static bool denied(unsigned caps) {
+  calls.push_back(caps);
+  return (caps & MALLOC_CAP_SPIRAM) ? fail_psram : fail_internal;
+}
+
+static void *heap_caps_malloc(size_t size, unsigned caps) {
+  if (denied(caps) || size == 0) return nullptr;
+  void *ptr = std::malloc(size);
+  assert(ptr);
+  blocks[ptr] = {size, caps};
+  return ptr;
+}
+
+static void heap_caps_free(void *ptr) {
+  if (!ptr) return;
+  assert(blocks.erase(ptr) == 1);
+  std::free(ptr);
+}
+
+static void *heap_caps_aligned_alloc(size_t align, size_t size, unsigned caps) {
+  if (denied(caps) || size == 0) return nullptr;
+  void *ptr{};
+  assert(posix_memalign(&ptr, align, size) == 0);
+  blocks[ptr] = {size, caps};
+  return ptr;
+}
+
+static void *heap_caps_realloc(void *ptr, size_t size, unsigned caps) {
+  if (size == 0) {
+    heap_caps_free(ptr);
+    return nullptr;
+  }
+  if (!ptr) return heap_caps_malloc(size, caps);
+  if (denied(caps)) return nullptr;
+  const auto old = blocks.at(ptr);
+  void *next = std::malloc(size);
+  assert(next);
+  std::memcpy(next, ptr, std::min(size, old.size));
+  heap_caps_free(ptr);
+  blocks[next] = {size, caps};
+  return next;
+}
+
+struct multi_heap_info_t {
+  size_t total_allocated_bytes{}, total_free_bytes{}, largest_free_block{};
+  size_t allocated_blocks{}, free_blocks{};
+};
+struct lv_mem_monitor_t {
+  size_t total_size{}, free_size{}, max_used{}, free_biggest_size{};
+  size_t used_cnt{}, free_cnt{}, used_pct{}, frag_pct{};
+};
+static bool missing_pool;
+static void heap_caps_get_info(multi_heap_info_t *info, unsigned) {
+  *info = missing_pool ? multi_heap_info_t{} :
+      multi_heap_info_t{64, 64, 64, 1, 1};
+}
+
+// PRODUCTION_ALLOCATOR
+
+/** A temporary PSRAM failure must not change later allocation preferences. */
+static void transient_failure() {
+  fail_psram = true;
+  void *fallback = lv_malloc_core(32);
+  assert(fallback && !(blocks.at(fallback).caps & MALLOC_CAP_SPIRAM));
+  fail_psram = false;
+  void *next = lv_malloc_core(64);
+  std::printf("later_malloc_caps=%u preferred=%u\n", blocks.at(next).caps,
+              MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+  std::fflush(stdout);
+  assert(blocks.at(next).caps & MALLOC_CAP_SPIRAM);
+  void *draw = lv_alloc_draw_buf(33, false);
+  assert(draw && blocks.at(draw).size == 48);
+  assert(blocks.at(draw).caps & MALLOC_CAP_SPIRAM);
+  void *internal = lv_alloc_draw_buf(33, true);
+  assert(internal && blocks.at(internal).caps == MALLOC_CAP_8BIT);
+  lv_free_core(fallback);
+  lv_free_core(next);
+  lv_free_core(draw);
+  lv_free_core(internal);
+}
+
+/** Failed realloc keeps the original bytes; a later retry can use PSRAM. */
+static void reallocations() {
+  auto *ptr = static_cast<unsigned char *>(lv_malloc_core(16));
+  std::memset(ptr, 0x5a, 16);
+  fail_psram = true;
+  ptr = static_cast<unsigned char *>(lv_realloc_core(ptr, 32));
+  assert(ptr && !(blocks.at(ptr).caps & MALLOC_CAP_SPIRAM));
+  for (unsigned i = 0; i < 16; ++i) assert(ptr[i] == 0x5a);
+  fail_internal = true;
+  assert(lv_realloc_core(ptr, 64) == nullptr);
+  assert(blocks.at(ptr).size == 32 && ptr[0] == 0x5a);
+  fail_psram = fail_internal = false;
+  ptr = static_cast<unsigned char *>(lv_realloc_core(ptr, 64));
+  assert(ptr && (blocks.at(ptr).caps & MALLOC_CAP_SPIRAM));
+  for (unsigned i = 0; i < 16; ++i) assert(ptr[i] == 0x5a);
+  assert(lv_realloc_core(ptr, 0) == nullptr);
+  assert(lv_realloc_core(nullptr, 0) == nullptr);
+  void *created = lv_realloc_core(nullptr, 16);
+  assert(created && (blocks.at(created).caps & MALLOC_CAP_SPIRAM));
+  lv_free_core(created);
+}
+
+/** Repeated failure and recovery must not consume a shared policy flag. */
+static void repeated_failures() {
+  for (unsigned i = 0; i < 1000; ++i) {
+    fail_psram = fail_internal = true;
+    assert(lv_malloc_core(16) == nullptr);
+    fail_internal = false;
+    void *fallback = lv_malloc_core(16);
+    assert(fallback && !(blocks.at(fallback).caps & MALLOC_CAP_SPIRAM));
+    fail_psram = false;
+    void *recovered = lv_malloc_core(16);
+    assert(recovered && (blocks.at(recovered).caps & MALLOC_CAP_SPIRAM));
+    lv_free_core(fallback);
+    lv_free_core(recovered);
+  }
+  assert(blocks.empty());
+  lv_mem_monitor_t monitor{};
+  missing_pool = true;
+  lv_mem_monitor_core(&monitor);
+  assert(monitor.total_size == 0 && monitor.used_pct == 0);
+  missing_pool = false;
+  lv_mem_monitor_core(&monitor);
+  assert(monitor.total_size == 128 && monitor.used_pct == 50);
+}
+
+int main() {
+  transient_failure();
+  reallocations();
+  repeated_failures();
+  std::puts("LVGL_ALLOCATION_RECOVERY_NATIVE=PASS transient local_fallback "
+            "draw_buffer realloc_preserves_bytes zero_free stress1000");
+}

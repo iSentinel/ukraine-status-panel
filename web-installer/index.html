@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#07111f">
+  <title>Ukraine Status Panel — Web Installer</title>
+  <script type="module" src="vendor/esp-web-tools/10.4.0/install-button.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      --bg-deep: #07111f;
+      --bg: #0f172a;
+      --panel: #0c1828;
+      --muted: #91a8b2;
+      --text: #f8fafc;
+      --border: #263d57;
+      --info: #60a5fa;
+      --warning: #f5be26;
+      --radius: 16px;
+      --control-radius: 9px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 0; background: var(--bg-deep); color: var(--text); }
+    main { width: min(100% - 32px, 780px); margin: 0 auto; padding: 36px 0 56px; }
+    .topline { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; }
+    .eyebrow { margin: 0; color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .langs { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: 12px; background: var(--panel); }
+    .langs button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 1px solid transparent; border-radius: var(--control-radius); background: transparent; color: var(--muted); font: inherit; cursor: pointer; }
+    .langs button[aria-pressed="true"] { border-color: var(--border); border-bottom: 2px solid var(--info); background: var(--bg); color: var(--text); }
+    button:focus-visible, a:focus-visible { outline: 3px solid var(--info); outline-offset: 2px; }
+    .panel { padding: 28px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); }
+    h1 { max-width: 620px; margin: 0; font-size: clamp(28px, 5vw, 36px); line-height: 1.08; letter-spacing: -.025em; }
+    .lede { max-width: 620px; margin: 12px 0 0; color: var(--muted); font-size: 16px; line-height: 1.55; }
+    .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 28px 0; padding: 0; list-style: none; counter-reset: setup; }
+    .steps li { min-width: 0; padding: 14px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; line-height: 1.4; counter-increment: setup; }
+    .steps li::before { display: block; margin-bottom: 8px; color: var(--text); content: "0" counter(setup); font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 800; letter-spacing: .08em; }
+    .install-row { display: flex; align-items: center; gap: 16px; min-height: 56px; margin: 4px 0 24px; }
+    .install-hint { margin: 0; color: var(--muted); font-size: 13px; }
+    .notes { display: grid; gap: 10px; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--border); }
+    .note { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .note strong { color: var(--text); }
+    .status { display: inline-flex; align-items: center; gap: 8px; min-height: 28px; margin-top: 20px; color: var(--muted); font-size: 12px; }
+    .status::before { width: 8px; height: 8px; border-radius: 50%; background: var(--warning); content: ""; }
+    @media (max-width: 620px) {
+      main { width: min(100% - 24px, 780px); padding-top: 18px; }
+      .topline { align-items: flex-start; flex-direction: column; margin-bottom: 16px; }
+      .panel { padding: 20px; }
+      .steps { grid-template-columns: 1fr; gap: 0; }
+      .steps li { padding-inline: 0; }
+      .install-row { align-items: flex-start; flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <div class="topline">
+    <p class="eyebrow">ESP32-S3 · USB setup</p>
+    <div class="langs" aria-label="Language">
+      <button type="button" data-lang="uk" aria-pressed="false">UA</button>
+      <button type="button" data-lang="ru" aria-pressed="false">RU</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+
+  <section class="panel" aria-labelledby="installer-title">
+    <h1 id="installer-title" data-i18n="title">Ukraine Status Panel</h1>
+    <p class="lede" data-i18n="device">Waveshare ESP32-S3-Touch-LCD-7B — перше встановлення через USB.</p>
+
+    <ol class="steps">
+      <li data-i18n="stepUsb">Підключіть панель напряму через USB.</li>
+      <li data-i18n="stepInstall">Запустіть інсталятор і дочекайтесь завершення прошивання.</li>
+      <li data-i18n="stepWifi">Налаштуйте Wi-Fi через Improv Serial або Setup AP.</li>
+    </ol>
+
+    <div class="install-row">
+      <esp-web-install-button manifest="manifest.json"></esp-web-install-button>
+      <p class="install-hint" data-i18n="installHint">Інсталяція стирає попередню конфігурацію цього ESP32-S3.</p>
+    </div>
+
+    <div class="notes">
+      <p class="note" data-i18n="warning"><strong>Браузер:</strong> потрібна підтримка Web Serial і пряме USB-підключення.</p>
+      <p class="note" data-i18n="expiry"><strong>Налаштування:</strong> вікно Setup/Improv активне 15 хвилин; після тайм-ауту перезапустіть живлення панелі.</p>
+    </div>
+
+    <div class="status" data-i18n="releaseGate">Публічний образ доступний лише після апаратної перевірки саме цієї версії.</div>
+  </section>
+</main>
+<script>
+const copy = {
+  uk: {
+    device: 'Waveshare ESP32-S3-Touch-LCD-7B — перше встановлення через USB.',
+    stepUsb: 'Підключіть панель напряму через USB.',
+    stepInstall: 'Запустіть інсталятор і дочекайтесь завершення прошивання.',
+    stepWifi: 'Налаштуйте Wi-Fi через Improv Serial або Setup AP.',
+    installHint: 'Інсталяція стирає попередню конфігурацію цього ESP32-S3.',
+    warning: 'Браузер: потрібна підтримка Web Serial і пряме USB-підключення.',
+    expiry: 'Налаштування: вікно Setup/Improv активне 15 хвилин; після тайм-ауту перезапустіть живлення панелі.',
+    releaseGate: 'Публічний образ доступний лише після апаратної перевірки саме цієї версії.'
+  },
+  ru: {
+    device: 'Waveshare ESP32-S3-Touch-LCD-7B — первая установка через USB.',
+    stepUsb: 'Подключите панель напрямую по USB.',
+    stepInstall: 'Запустите установщик и дождитесь завершения прошивки.',
+    stepWifi: 'Настройте Wi-Fi через Improv Serial или Setup AP.',
+    installHint: 'Установка стирает предыдущую конфигурацию этого ESP32-S3.',
+    warning: 'Браузер: требуется поддержка Web Serial и прямое USB-подключение.',
+    expiry: 'Настройка: окно Setup/Improv активно 15 минут; после тайм-аута перезапитайте панель.',
+    releaseGate: 'Публичный образ доступен только после аппаратной проверки именно этой версии.'
+  },
+  en: {
+    device: 'Waveshare ESP32-S3-Touch-LCD-7B — first installation over USB.',
+    stepUsb: 'Connect the panel directly over USB.',
+    stepInstall: 'Start the installer and wait for flashing to finish.',
+    stepWifi: 'Configure Wi-Fi with Improv Serial or the Setup access point.',
+    installHint: 'Installation erases the previous configuration on this ESP32-S3.',
+    warning: 'Browser: Web Serial support and a direct USB connection are required.',
+    expiry: 'Provisioning: Setup/Improv stays open for 15 minutes; power-cycle the panel after timeout.',
+    releaseGate: 'A public image is available only after hardware acceptance of that exact version.'
+  }
+};
+function setLanguage(lang) {
+  const selected = copy[lang] ? lang : 'en';
+  document.documentElement.lang = selected;
+  for (const [key, value] of Object.entries(copy[selected])) {
+    const node = document.querySelector(`[data-i18n="${key}"]`);
+    if (node) node.textContent = value;
+  }
+  document.querySelectorAll('[data-lang]').forEach((button) => {
+    button.setAttribute('aria-pressed', String(button.dataset.lang === selected));
+  });
+  localStorage.setItem('usp-installer-language', selected);
+}
+document.querySelectorAll('[data-lang]').forEach((button) => {
+  button.addEventListener('click', () => setLanguage(button.dataset.lang));
+});
+const preferred = localStorage.getItem('usp-installer-language') ||
+  (navigator.language || 'en').slice(0, 2);
+setLanguage(preferred);
+</script>
+</body>
+</html>

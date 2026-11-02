@@ -1,0 +1,11 @@
+{
+  "background": "#07111F",
+  "base": "base-rgb565.png",
+  "height": 488,
+  "mask_dir": "masks-binary",
+  "outline": "#91A8B2",
+  "outline_pixels_removed_from_regions": 18756,
+  "region_count": 25,
+  "source": "assets/dashboard-map-0.115.44",
+  "width": 858
+}

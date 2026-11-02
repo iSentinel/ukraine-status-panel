@@ -1,0 +1,217 @@
+// Real scan entry points with observable semaphore and Wi-Fi replacements.
+#include <algorithm>
+#include <memory>
+#include <cassert>
+#include <cstdint>
+#include <functional>
+#include <iostream>
+template<typename... T> void log_values(T&&...) {}
+#define ESP_LOGI(...) log_values(__VA_ARGS__)
+#define ESP_LOGD(...) log_values(__VA_ARGS__)
+#define ESP_LOGW(...) log_values(__VA_ARGS__)
+#ifndef USP_TEST_NO_RUNTIME_POWER_SAVE
+#define USE_WIFI_RUNTIME_POWER_SAVE
+#endif
+#define pdMS_TO_TICKS(ms) (ms)
+using TickType_t=uint32_t;
+static constexpr int pdTRUE=1;
+static constexpr const char *TAG="scan.power.test";
+static bool held=false;
+static uint32_t now=0;
+static uint32_t requested_wait=999;
+static bool radio_fail=false;
+static int radio_starts=0;
+static std::function<void()> after_unlock;
+int xSemaphoreTake(void *,TickType_t wait) {
+  requested_wait=wait;
+  if(held) return 0;
+  held=true; return pdTRUE;
+}
+void xSemaphoreGive(void *) {
+  assert(held); held=false;
+  if(after_unlock) {
+    auto callback=after_unlock;after_unlock=nullptr;callback();
+  }
+}
+namespace esphome::wifi {
+struct WiFiComponent {
+  int references=0, requests=0, releases=0;
+  bool fail=false;
+  bool request_high_performance() {++requests;if(fail)return false;++references;return true;}
+  bool release_high_performance() {
+    assert(references>0);--references;++releases;return true;
+  }
+};
+static WiFiComponent component;
+[[maybe_unused]] static WiFiComponent *global_wifi_component=&component;
+}
+
+using esp_err_t=int;
+static constexpr int ESP_OK=0,WIFI_SCAN_TYPE_ACTIVE=1;
+struct wifi_scan_config_t {
+  bool show_hidden{},coex_background_scan{};
+  int scan_type{},home_chan_dwell_time{};
+  struct {struct {int min{},max{};} active;} scan_time;
+};
+int esp_wifi_scan_start(wifi_scan_config_t *,bool) {++radio_starts;return radio_fail?1:ESP_OK;}
+const char *esp_err_to_name(int) {return "host-error";}
+namespace esphome::usp_wifi_scan {
+uint32_t millis() {return now;}
+enum class WifiScanState:uint8_t {IDLE,START_PENDING,SCANNING,READY,ERROR};
+@ENTRY_DECL@
+class WifiScanApi {
+ public:
+  @LIMIT_DECL@
+  std::unique_ptr<WifiScanEntry[]> records_{new WifiScanEntry[MAX_NETWORKS]{}};
+  std::unique_ptr<WifiScanEntry[]> pending_records_{new WifiScanEntry[MAX_NETWORKS]{}};
+  uint16_t pending_scan_count_{},pending_hidden_count_{};
+  void expire_scan_locked_();
+  void *mutex_{reinterpret_cast<void *>(1)};
+  WifiScanState state_{WifiScanState::IDLE};
+  uint32_t scan_requested_ms_{},scan_started_ms_{};
+  uint16_t scan_count_{},hidden_count_{};
+  bool high_performance_requested_{false},scan_results_pending_=false;
+  uint32_t scan_generation_{0}, prepared_generation_{0}, radio_generation_{0};
+  bool lease_prepared_{false},radio_start_failed_{false};
+  bool update_scan_lease_();
+  void consume_radio_failure_();
+  @DEFER@
+  @TIMEOUT@
+  @LOCK@
+  void unlock_() const;
+  void loop();
+  bool start_scan_();
+  void expire_scan_();
+  bool request_high_performance_();
+  void release_high_performance_();
+  bool publish_results_();
+  void start_radio_scan_();
+};
+@METHODS@
+}
+using namespace esphome::usp_wifi_scan;
+auto &wifi=esphome::wifi::component;
+/** Give every scenario an independent main task and fake driver. */
+void reset() {
+  held=false;now=0;radio_fail=false;radio_starts=0;after_unlock=nullptr;
+  wifi=esphome::wifi::WiFiComponent{};
+}
+/** A new HTTP request after completion cannot lose its future lease. */
+void completion_interleave() {
+  reset();WifiScanApi s;
+  assert(s.start_scan_());assert(wifi.requests==0);
+  s.loop();assert(wifi.references==1 && radio_starts==0);
+  now=250;s.loop();assert(radio_starts==1);
+  s.scan_results_pending_=true;
+  after_unlock=[&]() {assert(s.start_scan_());assert(wifi.references==0);};
+  s.loop();assert(s.state_==WifiScanState::START_PENDING);
+  s.loop();assert(wifi.references==1 && radio_starts==1);
+  now=500;s.loop();assert(radio_starts==2 && wifi.references==1);
+  s.scan_results_pending_=true;s.loop();s.loop();
+  assert(wifi.references==0 && wifi.requests==2 && wifi.releases==2);
+}
+/** Contention cannot wait; a late first loop still gives Wi-Fi a full tick. */
+void contention() {
+  reset();WifiScanApi s;assert(s.start_scan_());
+  held=true;now=500;s.loop();assert(requested_wait==0 && wifi.requests==0);
+  held=false;s.loop();assert(wifi.requests==1 && radio_starts==0);
+  s.loop();assert(radio_starts==1 && requested_wait==0);
+}
+/** A timeout immediately followed by HTTP retry retains one existing lease. */
+void timeout_retry() {
+  reset();WifiScanApi s;assert(s.start_scan_());s.loop();
+  now=250;s.loop();now=15251;
+  assert(s.start_scan_());assert(wifi.references==1);
+  s.loop();assert(wifi.requests==1 && radio_starts==1);
+  now+=250;s.loop();assert(radio_starts==2);
+  s.scan_results_pending_=true;s.loop();assert(wifi.references==0 && wifi.releases==1);
+}
+/** A failed lease request is attempted once per HTTP generation. */
+void request_failure() {
+  reset();WifiScanApi s;wifi.fail=true;
+  assert(s.start_scan_());s.loop();
+  now=250;s.loop();s.loop();assert(wifi.requests==1);
+  now=15251;assert(s.start_scan_());wifi.fail=false;
+  s.loop();assert(wifi.requests==2 && wifi.references==1);
+  now+=250;s.loop();assert(radio_starts==2);
+  s.scan_results_pending_=true;s.loop();assert(wifi.releases==1);
+}
+/** Driver errors wait for a free state lock without ever waiting on HTTP. */
+void driver_failure() {
+  reset();WifiScanApi s;radio_fail=true;
+  assert(s.start_scan_());s.loop();now=250;s.loop();
+  assert(s.radio_start_failed_ && requested_wait==0 && wifi.references==1);
+  held=true;s.loop();assert(requested_wait==0 && s.radio_start_failed_);
+  held=false;s.loop();
+  assert(s.state_==WifiScanState::ERROR && wifi.references==0);
+  s.loop();assert(wifi.releases==1);
+}
+/** An old driver's failure must not overwrite a newly queued HTTP request. */
+void stale_driver_failure() {
+  reset();WifiScanApi s;radio_fail=true;
+  assert(s.start_scan_());s.loop();now=250;s.loop();now=15251;
+  assert(s.start_scan_());radio_fail=false;s.loop();
+  assert(s.state_==WifiScanState::START_PENDING && wifi.references==1);
+  now+=250;s.loop();assert(radio_starts==2);
+  s.scan_results_pending_=true;s.loop();assert(wifi.releases==1);
+}
+/** Counter wrap and repeated starts do not accumulate power requests. */
+void wrap_and_repeat() {
+  reset();WifiScanApi s;s.scan_generation_=UINT32_MAX;
+  assert(s.start_scan_());assert(s.scan_generation_==0);s.loop();
+  for(int i=0;i<300;++i) {assert(s.start_scan_());s.loop();}
+  assert(wifi.requests==1 && wifi.references==1);
+  now=250;s.loop();s.scan_results_pending_=true;s.loop();assert(wifi.releases==1);
+}
+/** Deadline works after browser departure and releases the lease once. */
+void no_http() {
+  reset();WifiScanApi s;assert(s.start_scan_());s.loop();now=250;s.loop();
+  now=15250;s.loop();assert(s.state_==WifiScanState::SCANNING);
+  now=15251;s.loop();assert(s.state_==WifiScanState::ERROR && wifi.references==0);
+  for(now=15252;now<60252;++now)s.loop();
+  assert(wifi.requests==1 && wifi.releases==1 && radio_starts==1);
+}
+/** Expired pending work never starts the radio, even when the loop was late. */
+void pending_timeout() {
+  reset();WifiScanApi s;assert(s.start_scan_());
+  now=15001;s.loop();
+  assert(s.state_==WifiScanState::ERROR && radio_starts==0 && wifi.requests==0);
+}
+/** A busy HTTP owner never blocks timeout checking in the main task. */
+void busy_timeout() {
+  reset();WifiScanApi s;assert(s.start_scan_());s.loop();now=250;s.loop();
+  held=true;now=15251;s.loop();assert(requested_wait==0 && wifi.references==1);
+  held=false;s.loop();assert(s.state_==WifiScanState::ERROR && wifi.references==0);
+}
+/** Exact 15s boundary remains valid across clock wrap. */
+void timeout_wrap() {
+  reset();WifiScanApi s;now=UINT32_MAX-200;
+  assert(s.start_scan_());s.loop();now=49;s.loop();
+  now=15049;s.loop();assert(s.state_==WifiScanState::SCANNING);
+  now=15050;s.loop();assert(s.state_==WifiScanState::ERROR && wifi.releases==1);
+}
+/** An actual pending result cannot revive a scan past its existing deadline. */
+void late_result() {
+  reset();WifiScanApi s;assert(s.start_scan_());s.loop();now=250;s.loop();
+  s.scan_results_pending_=true;
+  s.pending_scan_count_=1;s.pending_records_[0].rssi=-40;
+  now=15251;s.loop();
+  assert(s.state_==WifiScanState::ERROR && wifi.references==0);
+  assert(!s.scan_results_pending_ && s.scan_count_==0 && wifi.releases==1);
+}
+
+int main() {
+#ifdef USE_WIFI_RUNTIME_POWER_SAVE
+  completion_interleave();contention();timeout_retry();request_failure();
+  driver_failure();stale_driver_failure();wrap_and_repeat();
+  no_http();pending_timeout();busy_timeout();timeout_wrap();late_result();
+  std::cout<<"BF12_POWER_DEADLINE=PASS actual12 runtime_on interleave timeout_retry acquire_fail driver_fail busy stale wrap repeat300 no_http exact15000 late_result; no radio\n";
+#else
+  reset();WifiScanApi s;
+  assert(s.start_scan_());s.loop();now=250;s.loop();
+  assert(radio_starts==1 && wifi.requests==0 && wifi.references==0);
+  now=15251;s.loop();
+  assert(s.state_==WifiScanState::ERROR && wifi.releases==0);
+  std::cout<<"BF12_POWER_DEADLINE=PASS actual12 runtime_off start deadline no_power_api; no radio\n";
+#endif
+}

@@ -1,0 +1,9 @@
+[
+  ["HISTORY_STATS", "i18n_051"],
+  ["POWER_AVAILABILITY", "i18n_052"],
+  ["MAINS_VS_SCHEDULE", "i18n_053"],
+  ["OUTAGE_EVENTS", "i18n_054"],
+  ["NO_HISTORY", "i18n_055"],
+  ["DATA_QUALITY", "i18n_056"],
+  ["WAITING", "i18n_057"]
+]

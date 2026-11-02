@@ -1,0 +1,7 @@
+{
+  "algorithm": "Ed25519",
+  "key_id": "ed25519:10ac93051fa3c7d5",
+  "public_key_base64": "qiVbAxg8gnZh7hCXVs+nyXWSej3x2QiT9Rmf5v4QPBI=",
+  "purpose": "Ukraine Status Panel private OTA release manifest verification",
+  "schema": 1
+}

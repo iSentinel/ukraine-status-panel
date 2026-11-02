@@ -1,0 +1,40 @@
+#include <cassert>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <string>
+#include "usp_room_summary_text.h"
+#define id(name) name
+uint8_t ui_language{};
+struct History {
+ uint32_t valid{}, gaps{};
+ uint32_t valid_count() const { return valid; }
+ uint32_t gap_count() const { return gaps; }
+} room_history;
+uint32_t room_graph_valid_count{};
+uint32_t room_graph_gap_count{};
+const char *gold[3] = {"%u вимірів · %u пропусків", "%u измерений · %u пропусков", "%u samples · %u gaps"};
+
+std::string before() {
+@@BEFORE@@
+return summary;
+}
+std::string after() {
+@@AFTER@@
+return summary;
+}
+int main() {
+ unsigned getter=0,callbacks=0;
+ for(unsigned language=0;language<256;++language) {
+  assert(std::strcmp(usp_room_summary_text::format(language),gold[language<2?language:2])==0);
+  ++getter; ui_language=language;
+  for(uint32_t valid : {0u,1u,2u,9u,10u,287u,288u,65535u,0xffffffffu})
+   for(uint32_t gaps : {0u,1u,2u,9u,10u,287u,288u,65535u,0xffffffffu}) {
+    room_history.valid=valid;room_history.gaps=gaps;
+    room_graph_valid_count=valid;room_graph_gap_count=gaps;
+    assert(before()==after());++callbacks;
+   }
+ }
+ std::cout<<"ROOM_SUMMARY_PREFLIGHT=PASS getter="<<getter<<" callbacks="<<callbacks<<"\n";
+}

@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+"""Verify Settings YAML hit areas with real LVGL and production controller."""
+import argparse
+import importlib.util
+import json
+import os
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from loguru import logger
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def load(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def arguments():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--build-dir", type=Path)
+    parser.add_argument(
+        "--lvgl-root", type=Path, default=os.environ.get("USP_LVGL_ROOT")
+    )
+    args = parser.parse_args()
+    if args.lvgl_root is None or not (args.lvgl_root / "lvgl.h").exists():
+        parser.error("Set USP_LVGL_ROOT or --lvgl-root to real LVGL sources")
+    return args
+
+
+def fixture(directory):
+    layout = load("settings_layout", ROOT / "tests/settings-touch-layout.py")
+    report = layout.evidence()
+    directory.mkdir()
+    lines = []
+    for row in report["rows"]:
+        data = layout.items(ROOT / "firmware/ukraine-status-panel.yaml")[
+            row["id"]
+        ]
+        parent = data["parent"]
+        fields = row["rect"] + [
+            data["parent_x"],
+            data["parent_y"],
+            parent.get("width", 1024),
+            parent.get("height", 600),
+        ]
+        lines.append("  {" + ", ".join(str(v) for v in fields) + "},")
+    header = (
+        "#pragma once\n#include <cstddef>\n"
+        "struct Rect {int x,y,w,h,px,py,pw,ph;};\n"
+        "inline constexpr Rect RECTS[] = {\n"
+        + "\n".join(lines)
+        + "\n};\ninline constexpr size_t RECT_COUNT=sizeof(RECTS)/sizeof(RECTS[0]);\n"
+    )
+    (directory / "settings-touch-rects.h").write_text(header)
+    (directory / "layout.json").write_text(json.dumps(report, indent=2) + "\n")
+
+
+def build_and_test(args, directory):
+    directory.mkdir(exist_ok=False)
+    fixture_dir = directory / "fixture"
+    fixture(fixture_dir)
+    gate = load("lvgl_gate", ROOT / "tests/lcd-navigation-lvgl-native.py")
+    args.controller_include = ROOT / "include"
+    args.sanitize = True
+    cmake = gate.tool_path("cmake", None)
+    ninja = gate.tool_path("ninja", None)
+    command = gate.configure_command(args, directory / "build", cmake, ninja)
+    command.append(f"-DUSP_SETTINGS_TOUCH_FIXTURE_DIR={fixture_dir.resolve()}")
+    gate.run_command(command, directory / "configure.log")
+    gate.run_command(
+        [
+            cmake,
+            "--build",
+            str(directory / "build"),
+            "--target",
+            "settings_touch",
+            "settings_sections",
+            "-j2",
+        ],
+        directory / "build.log",
+    )
+    gate.run_command(
+        [str(directory / "build/settings_touch")], directory / "result.log"
+    )
+    gate.run_command(
+        [str(directory / "build/settings_sections")],
+        directory / "sections-result.log",
+    )
+    logger.info("{}", (directory / "result.log").read_text().strip())
+    logger.info("{}", (directory / "sections-result.log").read_text().strip())
+
+
+def main():
+    args = arguments()
+    with TemporaryDirectory(prefix="usp-settings-touch-") as temporary:
+        build_and_test(args, args.build_dir or Path(temporary) / "result")
+
+
+if __name__ == "__main__":
+    main()

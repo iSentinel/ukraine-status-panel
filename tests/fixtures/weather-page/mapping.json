@@ -1,0 +1,57 @@
+[
+  {
+    "widget": "weather_title_label",
+    "key": "WEATHER",
+    "before": "if (id(weather_ui_view).language == 0) return std::string(\"ПОГОДА\");\nif (id(weather_ui_view).language == 1) return std::string(\"ПОГОДА\");\nreturn std::string(\"WEATHER\");",
+    "after": "return std::string(usp_weather_page_text::label(\n    id(weather_ui_view).language, usp_weather_page_text::Key::WEATHER));",
+    "values": [
+      "ПОГОДА",
+      "ПОГОДА",
+      "WEATHER"
+    ]
+  },
+  {
+    "widget": "weather_now_title_label",
+    "key": "NOW",
+    "before": "if (id(weather_ui_view).language == 0) return std::string(\"ЗАРАЗ\");\nif (id(weather_ui_view).language == 1) return std::string(\"СЕЙЧАС\");\nreturn std::string(\"NOW\");",
+    "after": "return std::string(usp_weather_page_text::label(\n    id(weather_ui_view).language, usp_weather_page_text::Key::NOW));",
+    "values": [
+      "ЗАРАЗ",
+      "СЕЙЧАС",
+      "NOW"
+    ]
+  },
+  {
+    "widget": "weather_details_title_label",
+    "key": "DETAILS",
+    "before": "if (id(weather_ui_view).language == 0) return std::string(\"ДАНІ\");\nif (id(weather_ui_view).language == 1) return std::string(\"ДАННЫЕ\");\nreturn std::string(\"DETAILS\");",
+    "after": "return std::string(usp_weather_page_text::label(\n    id(weather_ui_view).language, usp_weather_page_text::Key::DETAILS));",
+    "values": [
+      "ДАНІ",
+      "ДАННЫЕ",
+      "DETAILS"
+    ]
+  },
+  {
+    "widget": "weather_refresh_button",
+    "key": "REFRESH",
+    "before": "if (id(weather_ui_view).language == 0) return std::string(\"ОНОВИТИ\");\nif (id(weather_ui_view).language == 1) return std::string(\"ОБНОВИТЬ\");\nreturn std::string(\"REFRESH\");",
+    "after": "return std::string(usp_weather_page_text::label(\n    id(weather_ui_view).language, usp_weather_page_text::Key::REFRESH));",
+    "values": [
+      "ОНОВИТИ",
+      "ОБНОВИТЬ",
+      "REFRESH"
+    ]
+  },
+  {
+    "widget": "weather_back_button",
+    "key": "BACK",
+    "before": "if (id(weather_ui_view).language == 0) return std::string(\"НАЗАД\");\nif (id(weather_ui_view).language == 1) return std::string(\"НАЗАД\");\nreturn std::string(\"BACK\");",
+    "after": "return std::string(usp_weather_page_text::label(\n    id(weather_ui_view).language, usp_weather_page_text::Key::BACK));",
+    "values": [
+      "НАЗАД",
+      "НАЗАД",
+      "BACK"
+    ]
+  }
+]

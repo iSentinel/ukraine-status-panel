@@ -1,0 +1,151 @@
+// Host dependencies replace only GPIO/I2C/timers; four touchscreen methods stay exact.
+#include <cassert>
+#include <cstdint>
+#include <cstring>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <vector>
+#define ESP_LOGVV(...) do {} while (0)
+#define ESP_LOGV(...) do {} while (0)
+#define LOG_STR(x) x
+#define ESP_LOG_MSG_COMM_FAIL "Communication failed"
+namespace esphome {
+namespace i2c { enum ErrorCode { ERROR_OK, ERROR_UNKNOWN }; }
+template<typename... Args> struct Trigger { std::function<void()> callback; void trigger(Args...) {if(callback) callback();} };
+inline uint16_t encode_uint16(uint8_t high, uint8_t low) {
+  return (uint16_t(high) << 8) | low;
+}
+namespace touchscreen {
+static const char *const TAG = "touchscreen";
+static constexpr uint32_t TOUCH_TIMEOUT_ID = 0;
+static constexpr uint8_t STATE_RELEASED=0, STATE_PRESSED=1, STATE_UPDATED=2;
+static constexpr uint8_t STATE_RELEASING=4, STATE_CALIBRATE=7;
+struct TouchPoint {
+  uint8_t id{};
+  int16_t x_raw{},y_raw{},z_raw{};
+  uint16_t x_prev{},y_prev{},x_org{},y_org{},x{},y{};
+  int8_t state{};
+};
+using TouchPoints_t=std::vector<TouchPoint>;
+struct TouchListener {
+  int presses{}, releases{};
+  void update(const TouchPoints_t &) {}
+  void touch(TouchPoint) {++presses;}
+  void release() {++releases;}
+};
+class Touchscreen {
+ public:
+  virtual ~Touchscreen() = default;
+  virtual void update_touches()=0;
+  void loop();
+  void send_touches_();
+  void add_raw_touch_position_(uint8_t,int16_t,int16_t,int16_t=0);
+  int16_t normalize_(int16_t,int16_t,int16_t,bool);
+  template<class F> void defer(F f) { f(); }
+  template<class K,class F> void set_timeout(K,uint16_t,F) {++timers;}
+  template<class K> void cancel_timeout(K) {}
+  int16_t x_raw_min_{},x_raw_max_{1024},y_raw_min_{},y_raw_max_{600};
+  int16_t display_width_{1024},display_height_{600};
+  uint16_t touch_timeout_{};
+  bool invert_x_{},invert_y_{},swap_x_y_{};
+  Trigger<TouchPoint,const TouchPoints_t &> touch_trigger_;
+  Trigger<const TouchPoints_t &> update_trigger_;
+  Trigger<> release_trigger_;
+  std::vector<TouchListener *> touch_listeners_;
+  std::map<uint8_t,TouchPoint> touches_;
+  struct {bool touched=true,init=true;} store_;
+  bool first_touch_{true},need_update_{},is_touched_{},was_touched_{},skip_update_{};
+  int timers{};
+};
+@BASE_METHODS@
+
+
+
+}
+namespace gt911 {
+@DRIVER_CONSTANTS@
+struct ButtonListener {void update_button(size_t,bool) {}};
+class GT911Touchscreen : public touchscreen::Touchscreen {
+ public:
+  bool setup_done_{true}, fail{};
+  uint8_t button_state_{0xFF};
+  std::vector<ButtonListener *> button_listeners_;
+  void update_touches() override;
+  void status_set_warning(const char *) {++warnings;}
+  int warnings{};
+  bool cancel_on_error_{true};
+  bool waiting_for_release_{false};
+  Trigger<> touch_cancel_trigger_;
+  int call_index_{}, fail_at_{};
+  uint8_t frame_state_{0x81};
+  bool communication_ok_(i2c::ErrorCode error);
+  bool read_touch_data_(uint8_t &state, uint8_t *data);
+  i2c::ErrorCode write(const uint8_t *,size_t) {
+    return ++call_index_==fail_at_?i2c::ERROR_UNKNOWN:i2c::ERROR_OK;
+  }
+  i2c::ErrorCode read(uint8_t *data,size_t size) {
+    if (++call_index_==fail_at_) return i2c::ERROR_UNKNOWN;
+    std::memset(data,0,size);
+    if(call_index_==2) data[0]=frame_state_;
+    else if(size>1) {data[1]=100; data[3]=100;}
+    return i2c::ERROR_OK;
+  }
+
+};
+@DRIVER_METHODS@
+
+
+}
+}
+/** Cover failures at all five I2C operations and opt-in compatibility. */
+void error_case(int phase,bool enabled) {
+  esphome::gt911::GT911Touchscreen panel;
+  esphome::touchscreen::TouchListener listener;
+  panel.cancel_on_error_=enabled;
+  panel.touch_listeners_.push_back(&listener);
+  int cancellations=0;
+  panel.touch_cancel_trigger_.callback=[&] {
+    assert(listener.releases==0);
+    ++cancellations;
+  };
+  panel.loop(); assert(listener.presses==1);
+  panel.call_index_=0;panel.fail_at_=phase;panel.store_.touched=true;
+  panel.loop();
+  assert(cancellations==(enabled?1:0));
+  assert(listener.releases==(enabled?1:0));
+  assert(panel.was_touched_==!enabled);
+  assert(panel.touches_.empty()==enabled);
+  if(!enabled) return;
+  for(int i=0;i<600;++i) {
+    panel.call_index_=0;panel.store_.touched=true;panel.loop();
+  }
+  assert(cancellations==1 && listener.releases==1);
+  panel.call_index_=0;panel.fail_at_=0;panel.store_.touched=true;panel.loop();
+  assert(listener.presses==1 && !panel.was_touched_ && panel.waiting_for_release_);
+  panel.call_index_=0;panel.frame_state_=0x80;panel.store_.touched=true;panel.loop();
+  assert(!panel.waiting_for_release_ && listener.releases==1);
+  panel.call_index_=0;panel.frame_state_=0x81;panel.store_.touched=true;panel.loop();
+  assert(listener.presses==2 && panel.was_touched_);
+  panel.call_index_=0;panel.frame_state_=0x80;panel.store_.touched=true;
+  panel.loop();assert(listener.releases==2 && panel.touches_.empty());
+}
+
+/** Not-ready frames and failed initialization retain their established behavior. */
+void non_error_case() {
+  esphome::gt911::GT911Touchscreen panel;
+  esphome::touchscreen::TouchListener listener;
+  panel.touch_listeners_.push_back(&listener);panel.loop();
+  panel.call_index_=0;panel.frame_state_=0;panel.store_.touched=true;panel.loop();
+  assert(listener.releases==0 && panel.was_touched_ && panel.warnings==0);
+  panel.call_index_=0;panel.frame_state_=0x86;panel.store_.touched=true;panel.loop();
+  assert(listener.releases==0 && panel.was_touched_ && panel.warnings==0);
+  panel.setup_done_=false;panel.store_.touched=true;panel.loop();
+  assert(listener.releases==0 && panel.warnings==0);
+}
+int main() {
+  for(int phase=1;phase<=5;++phase) for(bool enabled:{false,true})
+    error_case(phase,enabled);
+  non_error_case();
+  std::cout<<"CT2_DRIVER_NATIVE=PASS failures5 opt_in_compat repeated600 held_contact_quarantine recovery not_ready malformed setup\n";
+}

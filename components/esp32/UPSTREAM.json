@@ -1,0 +1,11 @@
+{
+  "upstream": "ESPHome",
+  "version": "2026.10.0",
+  "source": "esphome/components/esp32",
+  "modified_files": [
+    "preferences.cpp"
+  ],
+  "original_preferences_sha256": "c9e26028ac205ad0ea9fe62fa3d89789b6ccfc01ac098d2270fa1032c544f9b3",
+  "project_preferences_sha256": "3ddc1670683ac98298557261e71e9c21012255f5b029883693f631910f2942e9",
+  "reason": "Preserve existing NVS data when startup init/open fails; explicit reset still erases."
+}

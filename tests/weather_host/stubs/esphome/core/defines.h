@@ -1,0 +1,3 @@
+#pragma once
+#define ESPHOME_PROJECT_VERSION "host-test"
+#define CONFIG_MBEDTLS_CERTIFICATE_BUNDLE 0

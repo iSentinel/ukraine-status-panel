@@ -1,0 +1,112 @@
+#include <array>
+#include <cassert>
+#include <cmath>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <limits>
+#include <string>
+#include <iostream>
+#include "usp_indoor_text.h"
+
+struct Sensor { float state{}; };
+struct Detector {
+  bool present{}, ready{};
+  bool detected() const { return present; }
+  bool last_read_ok() const { return ready; }
+};
+struct Label { std::string text{}; uint32_t color{}; };
+static Detector environment_sht4x;
+static Sensor environment_temperature, environment_humidity;
+static unsigned ui_language;
+static Label weather_indoor_label, fullscreen_weather_indoor_label;
+static Label weather_room_button, fullscreen_weather_room_button;
+#define id(name) name
+static constexpr int LV_PART_MAIN = 0;
+static uint32_t lv_color_hex(uint32_t color) { return color; }
+static void lv_label_set_text(Label &label, const char *text) { label.text = text; }
+static void lv_obj_set_style_text_color(Label &label, uint32_t color, int) {
+  label.color = color;
+}
+namespace usp_lcd_navigation {
+static void button_text(Label &label, const char *text) { label.text = text; }
+}
+namespace usp_indoor_lcd_delivery {
+template <typename PrimaryTarget, typename FullscreenTarget>
+static void render(const std::string &text, uint32_t color,
+                   PrimaryTarget &&primary, FullscreenTarget &&fullscreen) {
+  lv_label_set_text(primary, text.c_str());
+  lv_obj_set_style_text_color(primary, lv_color_hex(color), LV_PART_MAIN);
+  lv_label_set_text(fullscreen, text.c_str());
+  lv_obj_set_style_text_color(fullscreen, lv_color_hex(color), LV_PART_MAIN);
+}
+}
+struct Snapshot {
+  std::array<std::string, 4> texts;
+  std::array<uint32_t, 2> colors;
+  bool operator==(const Snapshot &other) const {
+    return texts == other.texts && colors == other.colors;
+  }
+};
+static void clear() {
+  weather_indoor_label = {}; fullscreen_weather_indoor_label = {};
+  weather_room_button = {}; fullscreen_weather_room_button = {};
+}
+static Snapshot snapshot() {
+  return {{weather_indoor_label.text, fullscreen_weather_indoor_label.text,
+           weather_room_button.text, fullscreen_weather_room_button.text},
+          {weather_indoor_label.color, fullscreen_weather_indoor_label.color}};
+}
+void indoor_before() {
+@@INDOOR_BEFORE@@
+}
+void indoor_after() {
+@@INDOOR_AFTER@@
+}
+void entry_before() {
+@@ENTRY_BEFORE@@
+}
+void entry_after() {
+@@ENTRY_AFTER@@
+}
+static void catalog() {
+  using K = usp_indoor_text::Key;
+  const K names[] = {K::PREFIX, K::NOT_CONNECTED, K::WAITING, K::ROOM_ENTRY};
+  const char *golden[3][4] = {
+@@GOLDEN@@
+  };
+  for (unsigned lang = 0; lang < 256; ++lang) {
+    for (unsigned key = 0; key < 4; ++key) {
+      const char *actual = usp_indoor_text::label(lang, names[key]);
+      assert(!std::strcmp(actual, golden[lang < 3 ? lang : 2][key]));
+    }
+    for (unsigned bad : {4U, 255U}) {
+      assert(!std::strcmp(usp_indoor_text::label(lang, static_cast<K>(bad)), ""));
+    }
+  }
+}
+int main() {
+  catalog();
+  const float values[] = {-10.5f, 0.0f, 18.4f,
+      std::numeric_limits<float>::quiet_NaN(),
+      std::numeric_limits<float>::infinity(),
+      -std::numeric_limits<float>::infinity()};
+  unsigned comparisons = 0;
+  for (ui_language = 0; ui_language < 256; ++ui_language)
+    for (bool detected : {false, true})
+      for (bool ready : {false, true})
+        for (float t : values)
+          for (float h : values) {
+            environment_sht4x = {detected, ready};
+            environment_temperature.state = t; environment_humidity.state = h;
+            clear(); indoor_before(); entry_before(); const auto before = snapshot();
+            clear(); indoor_after(); entry_after(); const auto after = snapshot();
+            assert(before == after);
+            assert(after.texts[0] == after.texts[1]);
+            assert(after.texts[2] == after.texts[3]);
+            assert(after.colors[0] == after.colors[1]);
+            ++comparisons;
+          }
+  assert(comparisons == 36864);
+  std::cout << "INDOOR_ENTRY=PASS catalog1024 invalid512 callbacks36864\n";
+}

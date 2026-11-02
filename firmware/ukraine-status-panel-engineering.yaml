@@ -1,0 +1,6 @@
+# Engineering only: exposes diagnostic and synthetic-data Native API actions.
+# Ordinary devices use ukraine-status-panel-production.yaml.
+packages:
+  shared_engineering_source: !include ukraine-status-panel.yaml
+esphome:
+  build_path: build/ukraine-status-panel-engineering

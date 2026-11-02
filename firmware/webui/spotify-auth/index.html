@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Spotify — Ukraine Status Panel</title>
+<link rel="stylesheet" href="page.css">
+<script type="module" src="page.js"></script>
+</head>
+<body>
+<main>
+<header><a href="/" id="back">Back to panel</a><h1>Spotify</h1></header>
+<p id="status" role="status" aria-live="polite">Checking connection…</p>
+<p id="error" role="alert" hidden></p>
+<p id="hint" role="status" hidden></p>
+<form id="configuration" method="post">
+<div id="application-fields">
+<label id="client-label" for="client">Client ID</label>
+<input id="client" maxlength="128" autocomplete="off" spellcheck="false" aria-describedby="client-help">
+<p id="client-help">Copy the public Client ID from your Spotify app settings.</p>
+<label id="redirect-label" for="redirect">HTTPS return address</label>
+<input id="redirect" type="url" maxlength="256" autocomplete="off" spellcheck="false" aria-describedby="redirect-help">
+<p id="redirect-help">Use the exact address registered in Spotify.</p>
+</div>
+<div class="actions">
+<button type="submit" id="connect" disabled>Connect Spotify</button>
+<button type="button" id="cancel" disabled>Cancel sign-in</button>
+<a id="open-login" target="_blank" rel="noopener noreferrer" hidden>Open sign-in</a>
+</div>
+</form>
+<section id="manual-section">
+<h2 id="manual-title">Return a sign-in result</h2>
+<label id="manual-label" for="manual">Paste the result copied from the return page.</label>
+<textarea id="manual" rows="5" maxlength="4096" autocomplete="off" spellcheck="false"></textarea>
+<button type="button" id="submit-result" disabled>Submit result</button>
+</section>
+<footer>
+<p id="privacy">No password is requested here. Sign-in is completed on Spotify.</p>
+<a id="docs" href="https://developer.spotify.com/documentation/web-api/concepts/redirect_uri" target="_blank" rel="noopener noreferrer">Spotify app setup</a>
+</footer>
+</main>
+</body>
+</html>

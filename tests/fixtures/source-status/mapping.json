@@ -1,0 +1,86 @@
+[
+  {
+    "namespace": "usp_wifi_status_text",
+    "owner": "refresh_wifi_icon",
+    "key": "ONLINE",
+    "before": "id(ui_language) == 0 ? \"В мережі\"\n                  : id(ui_language) == 1 ? \"В сети\" : \"Online\"",
+    "after": "usp_wifi_status_text::label(id(ui_language), usp_wifi_status_text::Label::ONLINE)",
+    "values": [
+      "В мережі",
+      "В сети",
+      "Online"
+    ]
+  },
+  {
+    "namespace": "usp_wifi_status_text",
+    "owner": "refresh_wifi_icon",
+    "key": "OFFLINE",
+    "before": "id(ui_language) == 0 ? \"Офлайн\"\n                  : id(ui_language) == 1 ? \"Офлайн\" : \"Offline\"",
+    "after": "usp_wifi_status_text::label(id(ui_language), usp_wifi_status_text::Label::OFFLINE)",
+    "values": [
+      "Офлайн",
+      "Офлайн",
+      "Offline"
+    ]
+  },
+  {
+    "namespace": "usp_neptun_status_text",
+    "owner": "refresh_selected_neptun_ui",
+    "key": "AIR_ALERT",
+    "before": "id(ui_language) == 0 ? \"Повітряна тривога\"\n                  : id(ui_language) == 1 ? \"Воздушная тревога\"\n                                         : \"Air alert\"",
+    "after": "usp_neptun_status_text::label(id(ui_language), usp_neptun_status_text::Label::AIR_ALERT)",
+    "values": [
+      "Повітряна тривога",
+      "Воздушная тревога",
+      "Air alert"
+    ]
+  },
+  {
+    "namespace": "usp_neptun_status_text",
+    "owner": "refresh_selected_neptun_ui",
+    "key": "AIR_THREAT",
+    "before": "id(ui_language) == 0 ? \"Повітряна загроза\"\n                  : id(ui_language) == 1 ? \"Воздушная угроза\"\n                                         : \"Air threat\"",
+    "after": "usp_neptun_status_text::label(id(ui_language), usp_neptun_status_text::Label::AIR_THREAT)",
+    "values": [
+      "Повітряна загроза",
+      "Воздушная угроза",
+      "Air threat"
+    ]
+  },
+  {
+    "namespace": "usp_neptun_status_text",
+    "owner": "refresh_selected_neptun_ui",
+    "key": "NO_ACTIVE",
+    "before": "id(ui_language) == 0 ? \"Немає активної\"\n                  : id(ui_language) == 1 ? \"Нет активной\" : \"No active\"",
+    "after": "usp_neptun_status_text::label(id(ui_language), usp_neptun_status_text::Label::NO_ACTIVE)",
+    "values": [
+      "Немає активної",
+      "Нет активной",
+      "No active"
+    ]
+  },
+  {
+    "namespace": "usp_neptun_status_text",
+    "owner": "refresh_selected_neptun_ui",
+    "key": "CACHED_SUFFIX",
+    "before": "id(ui_language) == 0 ? \" · кеш\"\n                  : id(ui_language) == 1 ? \" · кэш\" : \" · cached\"",
+    "after": "usp_neptun_status_text::label(id(ui_language), usp_neptun_status_text::Label::CACHED_SUFFIX)",
+    "values": [
+      " · кеш",
+      " · кэш",
+      " · cached"
+    ]
+  },
+  {
+    "namespace": "usp_neptun_status_text",
+    "owner": "refresh_selected_neptun_ui",
+    "key": "RECON",
+    "before": "id(ui_language) == 0 ? \"РОЗВ\"\n                  : id(ui_language) == 1 ? \"РАЗВ\" : \"REC\"",
+    "after": "usp_neptun_status_text::label(id(ui_language), usp_neptun_status_text::Label::RECON)",
+    "values": [
+      "РОЗВ",
+      "РАЗВ",
+      "REC"
+    ]
+  }
+]

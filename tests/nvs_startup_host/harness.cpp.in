@@ -1,0 +1,125 @@
+// Host-only NVS boundaries: no serial, network, flash driver or panel access.
+#include <algorithm>
+#include <array>
+#include <cassert>
+#include <cstdint>
+#include <iostream>
+#include <string>
+#include <vector>
+using esp_err_t = int;
+using nvs_handle_t = uint32_t;
+constexpr int ESP_OK = 0;
+constexpr int ESP_FAIL = 1;
+constexpr int ESP_ERR_NVS_NOT_ENOUGH_SPACE = 2;
+constexpr int ESP_ERR_NVS_NO_FREE_PAGES = 3;
+constexpr int ESP_ERR_NVS_NEW_VERSION_FOUND = 4;
+constexpr int ESP_ERR_NVS_NOT_INITIALIZED = 5;
+constexpr int ESP_ERR_NVS_NOT_FOUND = 6;
+constexpr int NVS_READWRITE = 1;
+#define ESP_LOGD(...) ((void) 0)
+struct Context {
+  int initial_init{0};
+  int initial_open{0};
+  unsigned init_calls{0}, open_calls{0}, erase_calls{0}, deinit_calls{0};
+  bool initialized{false};
+  std::array<uint8_t, 32> saved{};
+};
+static Context context;
+
+/** Initialize the in-memory test partition, preserving stored bytes. */
+esp_err_t nvs_flash_init() {
+  ++context.init_calls;
+  const int result = context.init_calls == 1 ? context.initial_init : ESP_OK;
+  context.initialized = result == ESP_OK;
+  return result;
+}
+
+/** Return injected errors only at the host API boundary. */
+esp_err_t nvs_open(const char *, int, nvs_handle_t *handle) {
+  ++context.open_calls;
+  if (!context.initialized) return ESP_ERR_NVS_NOT_INITIALIZED;
+  const int result = context.open_calls == 1 ? context.initial_open : ESP_OK;
+  if (result == ESP_OK) *handle = 7;
+  return result;
+}
+
+/** Erase only this process's synthetic byte array. */
+esp_err_t nvs_flash_erase() {
+  ++context.erase_calls;
+  context.saved.fill(0);
+  return ESP_OK;
+}
+
+esp_err_t nvs_flash_deinit() {
+  ++context.deinit_calls;
+  context.initialized = false;
+  return ESP_OK;
+}
+
+namespace esphome::esp32 {
+static esp_err_t s_open_err = ESP_OK;
+static std::vector<int> s_pending_save;
+class ESP32Preferences {
+ public:
+  nvs_handle_t nvs_handle{0};
+  void open();
+  bool reset();
+};
+/* ACTUAL_FUNCTIONS */
+}  // namespace esphome::esp32
+
+/** Give each independent trial identifiable saved bytes. */
+static void reset_context(int init_status, int open_status) {
+  context = Context{};
+  context.initial_init = init_status;
+  context.initial_open = open_status;
+  context.saved.fill(0xA5);
+  esphome::esp32::s_open_err = ESP_OK;
+}
+
+/** Observe original destructive recovery or the proposed preserving behavior. */
+static void failure_cases(bool preserve) {
+  const std::array<std::array<int, 2>, 5> failures{{
+    {ESP_OK, ESP_ERR_NVS_NOT_ENOUGH_SPACE},
+    {ESP_OK, ESP_FAIL},
+    {ESP_OK, ESP_ERR_NVS_NOT_FOUND},
+    {ESP_ERR_NVS_NO_FREE_PAGES, ESP_OK},
+    {ESP_ERR_NVS_NEW_VERSION_FOUND, ESP_OK},
+  }};
+  for (const auto &failure : failures) {
+    reset_context(failure[0], failure[1]);
+    const auto before = context.saved;
+    esphome::esp32::ESP32Preferences preferences;
+    preferences.open();
+    assert(context.erase_calls == (preserve ? 0U : 1U));
+    assert((context.saved == before) == preserve);
+    if (preserve) {
+      assert(preferences.nvs_handle == 0);
+      assert(esphome::esp32::s_open_err != ESP_OK);
+    }
+  }
+}
+
+/** Healthy startup remains usable; an explicit factory reset still erases. */
+static void healthy_and_explicit_reset() {
+  reset_context(ESP_OK, ESP_OK);
+  const auto saved = context.saved;
+  esphome::esp32::ESP32Preferences preferences;
+  preferences.open();
+  assert(preferences.nvs_handle == 7);
+  assert(context.erase_calls == 0 && context.saved == saved);
+  esphome::esp32::s_pending_save.push_back(1);
+  assert(preferences.reset());
+  assert(context.erase_calls == 1 && context.saved != saved);
+  assert(preferences.nvs_handle == 0);
+  assert(esphome::esp32::s_pending_save.empty());
+}
+
+int main(int argc, char **argv) {
+  assert(argc == 2);
+  const bool preserve = std::string(argv[1]) == "preserve";
+  failure_cases(preserve);
+  healthy_and_explicit_reset();
+  std::cout << "NVS_STARTUP_HOST=" << (preserve ? "PRESERVED" : "AUTO_ERASE_REPRODUCED")
+            << " error_cases=5 healthy=PASS explicit_factory_reset=PASS no_device=1\\n";
+}

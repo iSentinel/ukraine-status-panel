@@ -1,0 +1,74 @@
+[
+  {
+    "owner": "refresh_indoor_environment_ui",
+    "key": "PREFIX",
+    "before": "\"В приміщенні: \"",
+    "after": "usp_indoor_text::label(id(ui_language), usp_indoor_text::Key::PREFIX)"
+  },
+  {
+    "owner": "refresh_indoor_environment_ui",
+    "key": "PREFIX",
+    "before": "\"В помещении: \"",
+    "after": "usp_indoor_text::label(id(ui_language), usp_indoor_text::Key::PREFIX)"
+  },
+  {
+    "owner": "refresh_indoor_environment_ui",
+    "key": "PREFIX",
+    "before": "\"Indoor: \"",
+    "after": "usp_indoor_text::label(id(ui_language), usp_indoor_text::Key::PREFIX)"
+  },
+  {
+    "owner": "refresh_indoor_environment_ui",
+    "key": "NOT_CONNECTED",
+    "before": "\"датчик не підключено\"",
+    "after": "usp_indoor_text::label(id(ui_language), usp_indoor_text::Key::NOT_CONNECTED)"
+  },
+  {
+    "owner": "refresh_indoor_environment_ui",
+    "key": "NOT_CONNECTED",
+    "before": "\"датчик не подключен\"",
+    "after": "usp_indoor_text::label(id(ui_language), usp_indoor_text::Key::NOT_CONNECTED)"
+  },
+  {
+    "owner": "refresh_indoor_environment_ui",
+    "key": "NOT_CONNECTED",
+    "before": "\"sensor not connected\"",
+    "after": "usp_indoor_text::label(id(ui_language), usp_indoor_text::Key::NOT_CONNECTED)"
+  },
+  {
+    "owner": "refresh_indoor_environment_ui",
+    "key": "WAITING",
+    "before": "\"очікування даних\"",
+    "after": "usp_indoor_text::label(id(ui_language), usp_indoor_text::Key::WAITING)"
+  },
+  {
+    "owner": "refresh_indoor_environment_ui",
+    "key": "WAITING",
+    "before": "\"ожидание данных\"",
+    "after": "usp_indoor_text::label(id(ui_language), usp_indoor_text::Key::WAITING)"
+  },
+  {
+    "owner": "refresh_indoor_environment_ui",
+    "key": "WAITING",
+    "before": "\"waiting for data\"",
+    "after": "usp_indoor_text::label(id(ui_language), usp_indoor_text::Key::WAITING)"
+  },
+  {
+    "owner": "refresh_room_entry_i18n",
+    "key": "ROOM_ENTRY",
+    "before": "\"\\u041a\\u0406\\u041c\\u041d\\u0410\\u0422\\u0410 \\u00b7 24\\u0413\"",
+    "after": "usp_indoor_text::label(lang, usp_indoor_text::Key::ROOM_ENTRY)"
+  },
+  {
+    "owner": "refresh_room_entry_i18n",
+    "key": "ROOM_ENTRY",
+    "before": "\"\\u041a\\u041e\\u041c\\u041d\\u0410\\u0422\\u0410 \\u00b7 24\\u0427\"",
+    "after": "usp_indoor_text::label(lang, usp_indoor_text::Key::ROOM_ENTRY)"
+  },
+  {
+    "owner": "refresh_room_entry_i18n",
+    "key": "ROOM_ENTRY",
+    "before": "\"ROOM \\u00b7 24H\"",
+    "after": "usp_indoor_text::label(lang, usp_indoor_text::Key::ROOM_ENTRY)"
+  }
+]

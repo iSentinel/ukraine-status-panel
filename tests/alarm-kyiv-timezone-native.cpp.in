@@ -1,0 +1,76 @@
+#include "alarm_schedule.h"
+#include <cassert>
+#include <cstddef>
+#include <iostream>
+using usp_alarm_schedule::Clock;
+using usp_alarm_schedule::Schedule;
+struct Frame { Clock clock; unsigned due; };
+struct Case { const Frame *frames; size_t count; bool spring; };
+// GENERATED_CASES
+
+/** Execute UTC minutes and require one firing for each civil alarm. */
+static void exercise(const Case &test, bool reboot) {
+  Schedule schedule;
+  for (unsigned i = 0; i < 3; ++i)
+    assert(schedule.configure(i, TIMES[i], 127, true));
+  unsigned fired = 0;
+  bool restored = false;
+  for (size_t i = 0; i < test.count; ++i) {
+    const auto &frame = test.frames[i];
+    const unsigned due = schedule.poll(frame.clock);
+    assert(due == frame.due);
+    assert((fired & due) == 0);
+    fired |= due;
+    if (reboot && fired == 7 && !restored) {
+      const auto saved = schedule.store();
+      Schedule fresh;
+      assert(fresh.restore(saved));
+      schedule = fresh;
+      restored = true;
+    }
+  }
+  assert(fired == 7);
+}
+
+/** Skipped-hour recovery must not turn a boot or UTC correction into a ring. */
+static void untrusted_jump(const Case &test) {
+  if (!test.spring) return;
+  for (size_t i = 1; i < test.count; ++i) {
+    if (test.frames[i].due != 7) continue;
+    Schedule boot, jump;
+    for (unsigned slot = 0; slot < 3; ++slot) {
+      assert(boot.configure(slot, TIMES[slot], 127, true));
+      assert(jump.configure(slot, TIMES[slot], 127, true));
+    }
+    assert(boot.poll(test.frames[i].clock) == 0);
+    assert(jump.poll(test.frames[i - 1].clock) == 0);
+    auto corrected = test.frames[i].clock;
+    corrected.epoch += 3600;
+    assert(jump.poll(corrected) == 0);
+    return;
+  }
+  assert(false && "Spring transition must have a skipped hour");
+}
+
+/** The timezone-derived weekday must still respect the user's day filter. */
+static void excluded_weekday(const Case &test) {
+  Schedule schedule;
+  const unsigned day = test.frames[0].clock.local.weekday;
+  const uint8_t allowed = static_cast<uint8_t>(127U & ~(1U << (day - 1)));
+  for (unsigned i = 0; i < 3; ++i)
+    assert(schedule.configure(i, TIMES[i], allowed, true));
+  for (size_t i = 0; i < test.count; ++i)
+    assert(schedule.poll(test.frames[i].clock) == 0);
+}
+
+int main() {
+  for (const auto &test : CASES) {
+    exercise(test, false);
+    exercise(test, true);
+    untrusted_jump(test);
+    excluded_weekday(test);
+  }
+  std::cout << "ALARM_KYIV_TIMEZONE_NATIVE=PASS transitions="
+            << sizeof(CASES) / sizeof(CASES[0])
+            << " one_shot persisted_dedup weekday no_boot_catchup no_UTC_jump\n";
+}

@@ -1,0 +1,33 @@
+/* USP LCD mockup kit — 1024x600, tokens follow design-system MASTER.md */
+:root{
+  --bg:#07111F; --card:#0C1828; --card2:#101E30; --line:#263D57; --line2:#1A2C42;
+  --tx:#F8FAFC; --tx2:#91A8B2; --tx3:#7F95A3;
+  --info:#3B82F6; --info2:#60A5FA; --sel:#2563EB;
+  --ok:#1F8A4C; --uav:#F5BE26; --air:#F97316; --mis:#DC3545; --bal:#A855F7; --nod:#34424E;
+  --precip:#60A5FA; --sun:#FFC24D; --stale:#F5BE26;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#1b1b1b}
+body{font-family:'Noto Sans',sans-serif;color:var(--tx);-webkit-font-smoothing:antialiased}
+.screen{position:relative;width:1024px;height:600px;overflow:hidden;background:var(--bg);margin:0 0 24px 0}
+.abs{position:absolute}
+.card{position:absolute;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.t18{font-size:18px;line-height:24px}.t20{font-size:20px;line-height:27px}.t22{font-size:22px;line-height:30px}
+.t24{font-size:24px;line-height:32px}.t28{font-size:28px;line-height:38px}.t32{font-size:32px;line-height:44px}
+.w3{font-weight:300}.w6{font-weight:600}.w7{font-weight:700}
+.c2{color:var(--tx2)}.c3{color:var(--tx3)}.cp{color:var(--precip)}
+.num{font-variant-numeric:tabular-nums}
+/* status bar (shared, all screens) */
+.sbar{position:absolute;left:0;top:0;width:1024px;height:44px;background:var(--bg);border-bottom:1px solid var(--line2)}
+.chip{position:absolute;top:6px;height:32px;border-radius:16px;padding:0 14px 0 10px;display:flex;align-items:center;gap:8px;font-size:18px;line-height:24px}
+.dot{width:12px;height:12px;border-radius:6px;flex:none}
+/* nav bar (buttons mode) */
+.nav{position:absolute;left:0;top:536px;width:1024px;height:64px;background:#0A1626;border-top:1px solid var(--line2);display:flex}
+.nav .it{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--tx2);font-size:18px;line-height:22px;position:relative}
+.nav .it svg{width:26px;height:26px}
+.nav .it.on{color:#DCE8FF}
+.nav .it.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:var(--info2)}
+.btn{position:absolute;height:48px;border-radius:12px;background:var(--card2);border:1px solid var(--line);color:var(--tx);font-size:18px;display:flex;align-items:center;justify-content:center;gap:8px}
+.lbl{font-size:18px;line-height:24px;color:var(--tx2)}
+.badge{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:14px;font-size:16px;line-height:20px}
+.note{position:absolute;right:10px;bottom:6px;font-size:12px;color:#55687A;font-family:monospace}

@@ -1,0 +1,309 @@
+{
+  "version": "0.115.2-dev",
+  "map_size": [
+    580,
+    330
+  ],
+  "map_offset": {
+    "x": 20,
+    "y": 55
+  },
+  "state_colors": {
+    "normal": "0x1F8A4C",
+    "drone": "0xF5BE26",
+    "missile": "0xDC3545",
+    "no_data": "0x34424E"
+  },
+  "priority": [
+    "MISSILE",
+    "DRONE",
+    "NORMAL",
+    "NO_DATA"
+  ],
+  "region_count": 25,
+  "cropped_pixels": 160192,
+  "estimated_a1_bytes": 20024,
+  "png_bytes": 9236,
+  "outline": {
+    "file": "assets/alert-map-0.115.0/alerts-map-outline.png",
+    "sha256": "184c719e9d24ef7e9cdc369ab3dc59e951f9a6569fcfa46e905d280fcdb8026c",
+    "border_pixels": 5669
+  },
+  "regions": [
+    {
+      "iso": "UA-05",
+      "id": "alert_region_ua_05",
+      "image_id": "alert_region_ua_05_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-05.png",
+      "x": 189,
+      "y": 104,
+      "width": 76,
+      "height": 79,
+      "sha256": "86b324ca1aa19323ef70b8c4355097976b73b94385411f0abda3afdc927ba80e"
+    },
+    {
+      "iso": "UA-07",
+      "id": "alert_region_ua_07",
+      "image_id": "alert_region_ua_07_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-07.png",
+      "x": 91,
+      "y": 22,
+      "width": 70,
+      "height": 71,
+      "sha256": "161627bb8a011f82d9066d977ceee6dd1a80a21b92422ae25ee527f9b1b8e470"
+    },
+    {
+      "iso": "UA-09",
+      "id": "alert_region_ua_09",
+      "image_id": "alert_region_ua_09_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-09.png",
+      "x": 463,
+      "y": 97,
+      "width": 65,
+      "height": 93,
+      "sha256": "1531d8b896d03213612418a427d5f4c4386ed5530af41ad0773b6565dd2c2376"
+    },
+    {
+      "iso": "UA-12",
+      "id": "alert_region_ua_12",
+      "image_id": "alert_region_ua_12_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-12.png",
+      "x": 336,
+      "y": 131,
+      "width": 108,
+      "height": 72,
+      "sha256": "a3153f1a767fdfb212bc762ca833f9edd6b2579f5bc18eee9a22ec3420b38838"
+    },
+    {
+      "iso": "UA-14",
+      "id": "alert_region_ua_14",
+      "image_id": "alert_region_ua_14_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-14.png",
+      "x": 429,
+      "y": 129,
+      "width": 71,
+      "height": 98,
+      "sha256": "bec8c31212acb029a2cf1b1ad1e0712e483bb000ffcd49d287597478b19fc056"
+    },
+    {
+      "iso": "UA-18",
+      "id": "alert_region_ua_18",
+      "image_id": "alert_region_ua_18_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-18.png",
+      "x": 185,
+      "y": 34,
+      "width": 71,
+      "height": 87,
+      "sha256": "5c35bccad8ee0245bf49a21fbbf2eafce952e419056eae871637b12a44fa9e72"
+    },
+    {
+      "iso": "UA-21",
+      "id": "alert_region_ua_21",
+      "image_id": "alert_region_ua_21_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-21.png",
+      "x": 53,
+      "y": 135,
+      "width": 70,
+      "height": 52,
+      "sha256": "97da982a97f5da1c53485aa251435b57785904cbdd1e32272649e41837f49f9e"
+    },
+    {
+      "iso": "UA-23",
+      "id": "alert_region_ua_23",
+      "image_id": "alert_region_ua_23_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-23.png",
+      "x": 368,
+      "y": 173,
+      "width": 84,
+      "height": 78,
+      "sha256": "65b6a07328e2460d3040c4693076b79e21e7170c0a6350edb70915da54825447"
+    },
+    {
+      "iso": "UA-26",
+      "id": "alert_region_ua_26",
+      "image_id": "alert_region_ua_26_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-26.png",
+      "x": 89,
+      "y": 118,
+      "width": 60,
+      "height": 76,
+      "sha256": "81dcba9082d5c225d80bdb294326654ceb0d02e69998efe2ed9f83822704abaa"
+    },
+    {
+      "iso": "UA-32",
+      "id": "alert_region_ua_32",
+      "image_id": "alert_region_ua_32_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-32.png",
+      "x": 239,
+      "y": 40,
+      "width": 80,
+      "height": 97,
+      "sha256": "87426cbc64aab2f4bcac55083e47cf1df1063c910cba5563cec3f482942b883d"
+    },
+    {
+      "iso": "UA-35",
+      "id": "alert_region_ua_35",
+      "image_id": "alert_region_ua_35_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-35.png",
+      "x": 251,
+      "y": 128,
+      "width": 114,
+      "height": 65,
+      "sha256": "6a2ae7caec886a1999a8c117b6590e299d1d8591fc3f9386af83cbc24137d729"
+    },
+    {
+      "iso": "UA-43",
+      "id": "alert_region_ua_43",
+      "image_id": "alert_region_ua_43_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-43.png",
+      "x": 323,
+      "y": 247,
+      "width": 113,
+      "height": 78,
+      "sha256": "de4080af20c7e88c07c170f5804bfb64913d64774efd5d32970084527f4e54a4"
+    },
+    {
+      "iso": "UA-46",
+      "id": "alert_region_ua_46",
+      "image_id": "alert_region_ua_46_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-46.png",
+      "x": 66,
+      "y": 74,
+      "width": 78,
+      "height": 80,
+      "sha256": "740d9735fe66b0f388e3786fde0301419ec8f97afead8aff9f9dd68337c7f454"
+    },
+    {
+      "iso": "UA-48",
+      "id": "alert_region_ua_48",
+      "image_id": "alert_region_ua_48_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-48.png",
+      "x": 264,
+      "y": 169,
+      "width": 81,
+      "height": 75,
+      "sha256": "7195c0e071c8538078d349eed531f1e144ccc4d462f8ecc774d53b299148cab0"
+    },
+    {
+      "iso": "UA-51",
+      "id": "alert_region_ua_51",
+      "image_id": "alert_region_ua_51_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-51.png",
+      "x": 211,
+      "y": 169,
+      "width": 86,
+      "height": 123,
+      "sha256": "28463cb38b07e14e31ef8376c56df9a44e99bfb3962ee5b50ae9796c95bb383a"
+    },
+    {
+      "iso": "UA-53",
+      "id": "alert_region_ua_53",
+      "image_id": "alert_region_ua_53_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-53.png",
+      "x": 312,
+      "y": 78,
+      "width": 94,
+      "height": 75,
+      "sha256": "d91cf80cf3f02f6d787b5eed3c76b73c87752e8736107cb325fa029a622ee109"
+    },
+    {
+      "iso": "UA-56",
+      "id": "alert_region_ua_56",
+      "image_id": "alert_region_ua_56_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-56.png",
+      "x": 129,
+      "y": 23,
+      "width": 74,
+      "height": 81,
+      "sha256": "cf47f679a1e9413b55add42e40bfc1ddd5279c997840b71aaa07354eba207cb5"
+    },
+    {
+      "iso": "UA-59",
+      "id": "alert_region_ua_59",
+      "image_id": "alert_region_ua_59_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-59.png",
+      "x": 335,
+      "y": 6,
+      "width": 77,
+      "height": 94,
+      "sha256": "f62f8c863e4dc8a2f769941301826ebc91184bdab14dcedd3952243effce344c"
+    },
+    {
+      "iso": "UA-61",
+      "id": "alert_region_ua_61",
+      "image_id": "alert_region_ua_61_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-61.png",
+      "x": 120,
+      "y": 89,
+      "width": 49,
+      "height": 74,
+      "sha256": "2664122ee7dda50e5a5b73a09730517050726003b7b3a97fc73d8d4c3104b9d1"
+    },
+    {
+      "iso": "UA-63",
+      "id": "alert_region_ua_63",
+      "image_id": "alert_region_ua_63_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-63.png",
+      "x": 384,
+      "y": 82,
+      "width": 90,
+      "height": 80,
+      "sha256": "06f039bc9e04488f6be94e51588154039abb657f422921558410ef0e955dffac"
+    },
+    {
+      "iso": "UA-65",
+      "id": "alert_region_ua_65",
+      "image_id": "alert_region_ua_65_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-65.png",
+      "x": 297,
+      "y": 194,
+      "width": 104,
+      "height": 77,
+      "sha256": "75699a70cb33a97c65476d726ed40ee15ea72124324ed0d5438cd928d418ce5c"
+    },
+    {
+      "iso": "UA-68",
+      "id": "alert_region_ua_68",
+      "image_id": "alert_region_ua_68_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-68.png",
+      "x": 158,
+      "y": 76,
+      "width": 50,
+      "height": 89,
+      "sha256": "6d08aab7e91772eeeeefb5c4f496cae2a18d2b6801dc25ea9fe123b5616ddfbe"
+    },
+    {
+      "iso": "UA-71",
+      "id": "alert_region_ua_71",
+      "image_id": "alert_region_ua_71_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-71.png",
+      "x": 247,
+      "y": 89,
+      "width": 91,
+      "height": 76,
+      "sha256": "ac6d5764bed696df2e14464223fc00728e648aeea1433536b014f5c44d6dad90"
+    },
+    {
+      "iso": "UA-74",
+      "id": "alert_region_ua_74",
+      "image_id": "alert_region_ua_74_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-74.png",
+      "x": 271,
+      "y": 6,
+      "width": 83,
+      "height": 85,
+      "sha256": "32d3e2388a6ec475ca22a6c65ac20eab19dc7b94b81fc3357be285a627af5d81"
+    },
+    {
+      "iso": "UA-77",
+      "id": "alert_region_ua_77",
+      "image_id": "alert_region_ua_77_mask",
+      "file": "assets/alert-map-0.115.0/masks-binary/region-ua-77.png",
+      "x": 126,
+      "y": 151,
+      "width": 72,
+      "height": 43,
+      "sha256": "47137f799218a326b62150276f304f084699c6d8aac2586db8756829f06181e7"
+    }
+  ]
+}

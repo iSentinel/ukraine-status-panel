@@ -1,0 +1,147 @@
+/** Native staging proof with actual collection, serialization and publication. */
+#include <algorithm>
+#include <cassert>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
+using TickType_t=uint32_t;
+#define pdMS_TO_TICKS(ms) (ms)
+template<typename... T> void log_values(T&&...) {}
+static constexpr const char *TAG="wifi.scan.test";
+#define ESP_LOGI(...) log_values(__VA_ARGS__)
+static constexpr int pdTRUE=1;
+static bool busy=true;
+static uint32_t now=1000,requested_wait=999,take_calls{};
+int xSemaphoreTake(void *,TickType_t wait) {
+  ++take_calls;requested_wait=wait;return busy?0:pdTRUE;
+}
+void xSemaphoreGive(void *) {}
+namespace esphome {
+namespace wifi {
+struct WiFiScanResult {
+  std::string name;
+  int8_t strength{-50};uint8_t channel{1};bool secure{true},hidden{};
+  bool get_is_hidden() const {return hidden;}
+  std::string get_ssid() const {return name;}
+  int8_t get_rssi() const {return strength;}
+  uint8_t get_channel() const {return channel;}
+  bool get_with_auth() const {return secure;}
+};
+template<typename T> using wifi_scan_vector_t=std::vector<T>;
+}
+namespace usp_wifi_scan {
+uint32_t millis() {return now;}
+@ENTRY_DECL@
+@STATE_DECL@
+struct Storage {
+  @LIMIT_DECLS@
+  std::unique_ptr<WifiScanEntry[]> records_{new WifiScanEntry[MAX_NETWORKS]{}};
+  std::unique_ptr<char[]> response_{new char[RESPONSE_BYTES]{}};
+  uint16_t scan_count_{},hidden_count_{};
+};
+class WifiScanApi:public Storage {
+ public:
+  std::unique_ptr<WifiScanEntry[]> pending_records_{new WifiScanEntry[MAX_NETWORKS]{}};
+  uint16_t pending_scan_count_{},pending_hidden_count_{};
+  bool scan_results_pending_{};
+  void *mutex_{reinterpret_cast<void *>(1)};
+  WifiScanState state_{WifiScanState::SCANNING};
+  uint32_t scan_requested_ms_{},scan_started_ms_{};
+  @DEFER_DECL@
+  int radio_starts{},power_releases{};
+  @LOCK_DECL@
+  void unlock_() const;
+  uint32_t radio_generation_{},scan_generation_{};
+  bool lease_released_{false};
+  void expire_scan_locked_() {}
+  void consume_radio_failure_() {}
+  bool update_scan_lease_() {
+    if(state_==WifiScanState::READY && !lease_released_) {
+      lease_released_=true;release_high_performance_();
+    }
+    return false;
+  }
+  void loop();
+  bool publish_results_();
+  void on_wifi_scan_results(const wifi::wifi_scan_vector_t<wifi::WiFiScanResult> &);
+  void collect_results_(const wifi::wifi_scan_vector_t<wifi::WiFiScanResult> &,
+                        WifiScanEntry *,uint16_t &,uint16_t &);
+  uint16_t deduplicate_(WifiScanEntry *,uint16_t);
+  void sort_by_rssi_(WifiScanEntry *,uint16_t);
+  bool append_(size_t *,const char *);
+  bool append_ssid_(size_t *,const char *);
+  bool build_json_(uint16_t,uint16_t,size_t *);
+  void start_radio_scan_() {++radio_starts;}
+  void release_high_performance_() {++power_releases;}
+};
+@PROPOSAL_METHODS@
+}
+}
+using esphome::usp_wifi_scan::WifiScanApi;
+using esphome::usp_wifi_scan::WifiScanState;
+using Results=esphome::wifi::wifi_scan_vector_t<esphome::wifi::WiFiScanResult>;
+
+/** Compare the complete wire JSON with the unchanged original collector. */
+/** Validate publication without changing the in-flight HTTP response storage. */
+void payload_case(const Results &rows) {
+  WifiScanApi scan;
+  std::strcpy(scan.records_[0].ssid,"HTTP-old");scan.scan_count_=1;
+  std::strcpy(scan.response_.get(),"HTTP-body");
+  busy=true;requested_wait=999;take_calls=0;
+  scan.on_wifi_scan_results(rows);
+  assert(take_calls==0 && requested_wait==999 && scan.scan_results_pending_);
+  assert(std::strcmp(scan.records_[0].ssid,"HTTP-old")==0);
+  assert(std::strcmp(scan.response_.get(),"HTTP-body")==0);
+  for(int i=0;i<300;++i) scan.loop();
+  assert(scan.state_==WifiScanState::SCANNING && scan.scan_results_pending_);
+  assert(requested_wait==0 && scan.power_releases==0);
+  assert(std::strcmp(scan.response_.get(),"HTTP-body")==0);
+  busy=false;scan.loop();
+  assert(scan.state_==WifiScanState::READY && !scan.scan_results_pending_);
+  assert(scan.power_releases==1 && scan.radio_starts==0);
+  scan.loop();assert(scan.power_releases==1);
+  size_t length=0;
+  assert(scan.build_json_(scan.scan_count_,scan.hidden_count_,&length));
+  std::cout<<"BF12_JSON="<<std::string(scan.response_.get(),length)<<"\n";
+}
+
+/** Ignore unsolicited or expired data without reviving an ended scan. */
+void stale_case() {
+  for(auto state:{WifiScanState::IDLE,WifiScanState::ERROR,WifiScanState::START_PENDING}) {
+    WifiScanApi scan;scan.state_=state;scan.scan_requested_ms_=now;
+    std::strcpy(scan.records_[0].ssid,"keep");
+    busy=true;scan.on_wifi_scan_results({{"stale"}});
+    scan.loop();assert(scan.scan_results_pending_);
+    busy=false;scan.loop();assert(!scan.scan_results_pending_);
+    assert(scan.state_==state && std::strcmp(scan.records_[0].ssid,"keep")==0);
+    assert(scan.power_releases==0 && scan.radio_starts==0);
+  }
+}
+
+/** Keep the newest pending snapshot and retain it while a lock is unavailable. */
+void latest_case() {
+  WifiScanApi scan;busy=true;
+  scan.on_wifi_scan_results({{"old"}});
+  scan.on_wifi_scan_results({{"new",-30,7,false,false}});
+  scan.mutex_=nullptr;scan.loop();assert(scan.scan_results_pending_);
+  scan.mutex_=reinterpret_cast<void *>(1);busy=false;scan.loop();
+  assert(scan.state_==WifiScanState::READY && scan.scan_count_==1);
+  assert(std::strcmp(scan.records_[0].ssid,"new")==0);
+  assert(scan.records_[0].rssi==-30 && scan.records_[0].channel==7);
+}
+
+int main() {
+  payload_case({});
+  payload_case({{"",-90,1,false,true},{"hidden",-90,1,true,true}});
+  payload_case({{"dup",-70,1,true,false},{"dup",-30,7,false,false},
+                {"Q\"\\\x01",-40,3,true,false},{"Київ",-60,6,true,false}});
+  Results many;
+  for(int i=0;i<80;++i) many.push_back({"network-"+std::to_string(i),
+                                      int8_t(-90+i%40),uint8_t(i%11+1),true,i%7==0});
+  payload_case(many);stale_case();latest_case();
+  std::cout<<"BF12B_STAGING_NATIVE=PASS busy300 callback_wait0 retained publish_once wire_rows4 stale3 latest null PSRAM864\n";
+}

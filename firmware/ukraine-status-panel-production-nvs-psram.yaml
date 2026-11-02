@@ -1,0 +1,10 @@
+packages:
+  base: !include ukraine-status-panel-production.yaml
+
+esp32:
+  framework:
+    advanced:
+      nvs_cache_in_psram: true
+
+psram:
+  ignore_not_found: false
