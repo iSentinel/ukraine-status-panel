@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - bootstrap/ukraine-status-panel-public.tar.gz
+      - bootstrap/ukraine-status-panel-public.tar.xz
 
 permissions:
   contents: write
@@ -22,9 +22,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -f bootstrap/ukraine-status-panel-public.tar.gz
-          tar -tzf bootstrap/ukraine-status-panel-public.tar.gz >/dev/null
-          tar -xzf bootstrap/ukraine-status-panel-public.tar.gz -C .
+          test -f bootstrap/ukraine-status-panel-public.tar.xz
+          tar -tJf bootstrap/ukraine-status-panel-public.tar.xz >/dev/null
+          tar -xJf bootstrap/ukraine-status-panel-public.tar.xz -C .
           rm -rf bootstrap
 
       - name: Publish source tree
