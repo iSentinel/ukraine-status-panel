@@ -6,6 +6,12 @@ on:
     paths:
       - bootstrap/usp-snapshot.part-00
       - bootstrap/usp-snapshot.part-01
+      - bootstrap/usp-snapshot.part-02
+      - bootstrap/usp-snapshot.part-03
+      - bootstrap/usp-snapshot.part-04
+      - bootstrap/usp-snapshot.part-05
+      - bootstrap/usp-snapshot.part-06
+      - bootstrap/usp-snapshot.part-07
 
 permissions:
   contents: write
@@ -23,8 +29,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat bootstrap/usp-snapshot.part-00 \
-              bootstrap/usp-snapshot.part-01 > /tmp/ukraine-status-panel-public.tar.xz
+          cat bootstrap/usp-snapshot.part-{00..07} > /tmp/ukraine-status-panel-public.tar.xz
           echo "989b43affdfe8ca3557345a8ff601acdf449d2e0fc72b0ebd47d285d57b53f32  /tmp/ukraine-status-panel-public.tar.xz" | sha256sum -c -
           tar -tJf /tmp/ukraine-status-panel-public.tar.xz >/dev/null
           tar -xJf /tmp/ukraine-status-panel-public.tar.xz -C .
