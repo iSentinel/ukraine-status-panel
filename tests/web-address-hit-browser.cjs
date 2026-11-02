@@ -32,6 +32,10 @@ async function initialize(page, language) {
     };
   });
   await page.goto("http://usp.test/");
+  await page.waitForFunction(() =>
+    !!customElements.get("esp-app") && !!window.fixtureSource);
+  await page.evaluate(() => new Promise(resolve =>
+    requestAnimationFrame(() => requestAnimationFrame(resolve))));
   await page.evaluate(language => {
     fixtureSource.emit({id:"lang",name:"UI Language",domain:"select",
       sorting_group:"Panel settings",value:language,option:[language]});
