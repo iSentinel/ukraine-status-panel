@@ -22,10 +22,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for part in {00..15}; do
+          for part in {00..31}; do
             test -f "bootstrap/usp-snapshot.part-${part}"
           done
-          cat bootstrap/usp-snapshot.part-{00..15} > /tmp/ukraine-status-panel-public.tar.xz
+          cat bootstrap/usp-snapshot.part-{00..31} > /tmp/ukraine-status-panel-public.tar.xz
           echo "989b43affdfe8ca3557345a8ff601acdf449d2e0fc72b0ebd47d285d57b53f32  /tmp/ukraine-status-panel-public.tar.xz" | sha256sum -c -
           tar -tJf /tmp/ukraine-status-panel-public.tar.xz >/dev/null
           tar -xJf /tmp/ukraine-status-panel-public.tar.xz -C .
