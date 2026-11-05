@@ -42,6 +42,9 @@ jobs:
           python tests/web-installer-design-static.py
           node tests/web-installer-design-browser.cjs
           node tests/captive-portal-ui-browser.cjs
+      - name: Verify guarded production input fingerprint (read-only)
+        run: |
+          PYTHON_BIN=python ./scripts/compile-production.sh --fingerprint
       - name: Test weather data integrity with pinned ArduinoJson
         run: |
           git init "$RUNNER_TEMP/usp-arduinojson"
