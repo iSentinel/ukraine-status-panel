@@ -3,6 +3,7 @@
 import argparse
 import base64
 import hashlib
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -84,6 +85,7 @@ def execute(directory, fixture):
         capture_output=True,
         text=True,
         timeout=30,
+        env=dict(os.environ, TZ="Europe/Kyiv"),
     )
     (directory / "run.log").write_text(result.stdout + result.stderr)
     if result.returncode:
