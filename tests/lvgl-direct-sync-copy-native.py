@@ -4,6 +4,7 @@
 from pathlib import Path
 import os
 import subprocess
+import shutil
 
 from loguru import logger
 
@@ -13,8 +14,22 @@ WORK = ROOT / "artifacts" / "0.115.259-cd4-frame-sync" / "after-host"
 DEFAULT_LVGL = ROOT / "firmware/.esphome/build/ukraine-status-panel"
 DEFAULT_LVGL /= "managed_components/lvgl__lvgl"
 LVGL = Path(os.environ.get("USP_LVGL_ROOT", DEFAULT_LVGL))
-CMAKE = Path("/root/.cache/esphome/idf/tools/cmake/3.30.2/bin/cmake")
-NINJA = Path("/root/.cache/esphome/idf/tools/ninja/1.12.1/ninja")
+def host_tool(name: str, preferred: str) -> Path:
+    """Keep the pinned local tool, or use an installed CI host tool."""
+    candidate = os.environ.get("USP_" + name.upper() + "_BIN")
+    if candidate:
+        return Path(candidate)
+    pinned = Path(preferred)
+    if pinned.is_file() and os.access(pinned, os.X_OK):
+        return pinned
+    found = shutil.which(name)
+    if not found:
+        raise FileNotFoundError(f"Required host build tool is missing: {name}")
+    return Path(found)
+
+
+CMAKE = host_tool("cmake", "/root/.cache/esphome/idf/tools/cmake/3.30.2/bin/cmake")
+NINJA = host_tool("ninja", "/root/.cache/esphome/idf/tools/ninja/1.12.1/ninja")
 
 
 def write_cmake() -> None:
