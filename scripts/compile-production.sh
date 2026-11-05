@@ -52,7 +52,9 @@ source_fingerprint() {
           -type f ! -name '*.pyc' ! -name '*.pyo' -print0
       fi
     done
-    [[ -f "$secrets" ]] && printf "%s\0" "$secrets"
+    if [[ -f "$secrets" ]]; then
+      printf "%s\0" "$secrets"
+    fi
   } | sort -z | xargs -0 -r sha256sum | sha256sum | cut -d" " -f1
 }
 
