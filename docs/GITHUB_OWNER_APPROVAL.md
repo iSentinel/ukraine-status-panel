@@ -52,9 +52,13 @@ Do not install an Ed25519 private key, do not manufacture an identity, and do
 not claim this file is a signature. Its GitHub run page is the recorded online
 owner-action evidence; the local JSON is an owner declaration only.
 
+Run these commands **only on your private firmware host** containing the
+`.415` receipt-v2 scripts. The public `.407` source checkout does not
+contain these private production-acceptance tools.
+
 After the file is in your firmware host or container, run READ-ONLY checks:
 
-    cd .
+    cd /path/to/private/ukraine-status-panel
     python3 -B scripts/owner_release_readiness.py
     python3 -B scripts/receipt_v2_accept.py
     python3 -B scripts/receipt_v2_owner_payload.py
