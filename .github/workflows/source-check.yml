@@ -53,6 +53,8 @@ jobs:
           git init "$RUNNER_TEMP/usp-lvgl"
           git -C "$RUNNER_TEMP/usp-lvgl" fetch --depth 1 https://github.com/lvgl/lvgl.git 85aa60d18b3d5e5588d7b247abf90198f07c8a63
           git -C "$RUNNER_TEMP/usp-lvgl" checkout --detach FETCH_HEAD
+      - name: Generate real source for font and layout tests (no image)
+        run: bash scripts/ci-generate-source.sh
       - name: Run complete offline regression
         env:
           USP_RUN_LIVE: '0'
