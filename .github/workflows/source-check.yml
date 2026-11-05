@@ -62,6 +62,18 @@ jobs:
         run: |
           export USP_ARDUINOJSON_INCLUDE="$RUNNER_TEMP/usp-arduinojson/src"
           export USP_LVGL_ROOT="$RUNNER_TEMP/usp-lvgl"
+          # Keep the pinned CI dependencies visible at the ESPHome layout
+          # expected by strict native tests; do not build or flash an image.
+          native_dir="firmware/.esphome/build/ukraine-status-panel/managed_components"
+          mkdir -p "$native_dir"
+          test -f "$USP_ARDUINOJSON_INCLUDE/ArduinoJson.h"
+          test -f "$RUNNER_TEMP/usp-arduinojson/library.json"
+          test -f "$USP_LVGL_ROOT/lvgl.h"
+          python -c 'import json,os,pathlib; p=pathlib.Path(os.environ["USP_ARDUINOJSON_INCLUDE"]).parent/"library.json"; assert json.loads(p.read_text())["version"]=="7.4.3"'
+          test ! -e "$native_dir/bblanchon__arduinojson"
+          test ! -e "$native_dir/lvgl__lvgl"
+          ln -s "$RUNNER_TEMP/usp-arduinojson" "$native_dir/bblanchon__arduinojson"
+          ln -s "$USP_LVGL_ROOT" "$native_dir/lvgl__lvgl"
           bash scripts/run-regression.sh
       - name: Check repository structure
         run: bash scripts/check-source.sh
