@@ -3,6 +3,7 @@
 import argparse
 import os
 from pathlib import Path
+import shutil
 import re
 import subprocess
 import tempfile
@@ -103,7 +104,7 @@ def main():
         config = folder / "test.yaml"
         config.write_text(configuration(folder, args.components.resolve()))
         executable = os.environ.get(
-            "ESPHOME_BIN", "/opt/esphome/.venv/bin/esphome"
+            "ESPHOME_BIN", shutil.which("esphome") or "/opt/esphome/.venv/bin/esphome"
         )
         result = subprocess.run(
             [executable, "compile", str(config), "--only-generate"],
