@@ -41,23 +41,23 @@ Once the owner-approval workflow is merged into main:
 A regular push/tag/pull request never creates an owner approval. There are no
 cloud-storage secrets, required reviewers or separate signing accounts.
 
-## Bring approval back to LXC 106
+## Bring approval back to your firmware host or container
 
 Transfer the downloaded JSON to the project, without overwriting an existing
 approval, and set its mode to owner-only (0600). The canonical destination is:
 
-    /root/config/ukraine-status-panel/.work-state/receipt-v2-owner-approval.json
+    ./.work-state/receipt-v2-owner-approval.json
 
 Do not install an Ed25519 private key, do not manufacture an identity, and do
 not claim this file is a signature. Its GitHub run page is the recorded online
 owner-action evidence; the local JSON is an owner declaration only.
 
-After the file is in LXC 106, run READ-ONLY checks:
+After the file is in your firmware host or container, run READ-ONLY checks:
 
-    cd /root/config/ukraine-status-panel
-    /root/config/.qa-venv/bin/python3 -B scripts/owner_release_readiness.py
-    /root/config/.qa-venv/bin/python3 -B scripts/receipt_v2_accept.py
-    /root/config/.qa-venv/bin/python3 -B scripts/receipt_v2_owner_payload.py
+    cd .
+    python3 -B scripts/owner_release_readiness.py
+    python3 -B scripts/receipt_v2_accept.py
+    python3 -B scripts/receipt_v2_owner_payload.py
     sha256sum .work-state/receipt-v2-owner-approval.json
 
 Owner approval alone still does NOT apply a production release. Only after a
