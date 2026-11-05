@@ -196,8 +196,11 @@ class SignerTests(unittest.TestCase):
 
     def test_wrong_trusted_public_key(self):
         """Refuse a key that differs from out-of-band trusted fingerprint."""
-        pem = self.key.private_bytes(serialization.Encoding.PEM,
-            serialization.PrivateFormat.PKCS8, serialization.NoEncryption())
+        pem = self.key.private_bytes(
+            serialization.Encoding.PEM,
+            serialization.PrivateFormat.PKCS8,
+            serialization.NoEncryption(),
+        )
         encoded = base64.b64encode(pem).decode()
         with self.assertRaisesRegex(ValueError, "key identity differs"):
             signer.signing_key(encoded, "0" * 64)
