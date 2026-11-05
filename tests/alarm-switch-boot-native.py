@@ -3,6 +3,7 @@
 
 import argparse
 import hashlib
+from importlib import metadata, util
 import os
 from pathlib import Path
 import re
@@ -15,23 +16,21 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def framework_root(explicit):
-    """Locate installed source without downloading or altering the framework."""
+    """Find pinned installed ESPHome sources on either CI or the LXC."""
     if explicit:
-        return explicit
-    executable = Path(
-        os.environ.get("ESPHOME_BIN", "/opt/esphome-2026.10.1/bin/esphome")
-    )
-    matches = list(
-        executable.parent.parent.glob(
-            "lib/python*/site-packages/esphome/components/template/switch/"
-            "template_switch.cpp"
-        )
-    )
-    if len(matches) != 1:
-        raise ValueError(
-            "Use --framework-root for the installed ESPHome package"
-        )
-    return matches[0].parents[3]
+        package = explicit
+    else:
+        version = metadata.version("esphome")
+        if version != "2026.10.1":
+            raise ValueError(f"Unexpected ESPHome version: {version}")
+        specification = util.find_spec("esphome")
+        if not specification or not specification.submodule_search_locations:
+            raise ValueError("Installed ESPHome package was not found")
+        package = Path(next(iter(specification.submodule_search_locations)))
+    source = package / "components/template/switch/template_switch.cpp"
+    if not source.is_file():
+        raise ValueError("ESPHome switch source file is missing")
+    return package
 
 
 def restore_mode():
