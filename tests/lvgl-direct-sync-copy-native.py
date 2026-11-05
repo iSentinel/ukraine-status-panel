@@ -20,8 +20,12 @@ def host_tool(name: str, preferred: str) -> Path:
     if candidate:
         return Path(candidate)
     pinned = Path(preferred)
-    if pinned.is_file() and os.access(pinned, os.X_OK):
-        return pinned
+    try:
+        if pinned.is_file() and os.access(pinned, os.X_OK):
+            return pinned
+    except OSError:
+        # CI cannot inspect the system-owned local ESPHome cache.
+        pass
     found = shutil.which(name)
     if not found:
         raise FileNotFoundError(f"Required host build tool is missing: {name}")
