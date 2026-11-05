@@ -184,9 +184,7 @@ def main():
         assert directory.is_relative_to(ROOT / "artifacts")
         run_all(directory)
     else:
-        with tempfile.TemporaryDirectory(
-            prefix="indoor-entry-", dir=ROOT / "artifacts"
-        ) as name:
+        with tempfile.TemporaryDirectory(prefix="usp-indoor-entry-") as name:
             run_all(Path(name) / "cases")
 
 
