@@ -43,7 +43,8 @@ async function initialize(page, language) {
       sorting_group:"SvitloBot",state:"10.1"});
   }, language);
   const consent = page.locator(".usp-external-consent");
-  if (await consent.count()) await consent.click();
+  await consent.waitFor({state:"visible"});
+  await consent.click();
   await page.locator(".usp-finder input").first().waitFor();
 }
 
