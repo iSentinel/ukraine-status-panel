@@ -57,7 +57,7 @@ def main() -> None:
     caption_bindings(YAML[start:end])
     assert "include/usp_home_page_text.h" in YAML
     review = (
-        ROOT / "docs/development-plan-2026-10-19/CODE_AND_DESIGN_REVIEW.md"
+        ROOT / "docs/DESIGN_TOUCH_TARGET_RULES.md"
     ).read_text()
     assert "второстепенные — от 48×48" in review
     logger.info(

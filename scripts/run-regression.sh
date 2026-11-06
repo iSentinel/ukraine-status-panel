@@ -14,6 +14,9 @@ if [[ -z "${PYTHON_BIN:-}" ]]; then
 fi
 export USP_CONFIG="${USP_CONFIG:-$ROOT/firmware/ukraine-status-panel.yaml}"
 export USP_ADDRESS="${USP_ADDRESS:-ukraine-status-panel.local}"
+# Fresh GitHub clones have no ignored artifacts directory. Tests use it only
+# for temporary native fixtures and optional evidence; no firmware is built.
+mkdir -p "$ROOT/artifacts"
 cd "$ROOT/tests"
 run() {
   printf '\n==> %s\n' "$1"

@@ -1,5 +1,9 @@
 # Roadmap
 
+## Public release status
+
+Published source: `0.115.407-dev`, first-flash `validation-required`. Separately installed physical panel: `0.115.415-dev`, accepted rollback `0.115.414-dev`; these private release sources are not in this checkout. Public CI does not approve that installed image.
+
 Ukraine Status Panel is under active development for the Waveshare ESP32-S3-Touch-LCD-7B.
 
 ## Current focus

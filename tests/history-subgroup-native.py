@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Run the complete HistoryStore with sanitizers and an original v1 NVS fixture."""
 import argparse
+import base64
 import hashlib
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -24,9 +26,14 @@ def check_wiring():
         text,
     ), "History must receive the complete group label"
     fixture = ROOT / "tests/fixtures/history-v1-schedule-group3.bin"
-    assert len(fixture.read_bytes()) == 404
-    assert hashlib.sha256(fixture.read_bytes()).hexdigest() == LEGACY_SHA
-    return fixture
+    if fixture.is_file():
+        payload = fixture.read_bytes()
+    else:
+        archived = fixture.with_suffix(".bin.b64")
+        payload = base64.b64decode(archived.read_text().strip(), validate=True)
+    assert len(payload) == 404
+    assert hashlib.sha256(payload).hexdigest() == LEGACY_SHA
+    return payload
 
 
 def compiler_command(binary):
@@ -78,6 +85,7 @@ def execute(directory, fixture):
         capture_output=True,
         text=True,
         timeout=30,
+        env=dict(os.environ, TZ="Europe/Kyiv"),
     )
     (directory / "run.log").write_text(result.stdout + result.stderr)
     if result.returncode:
@@ -91,8 +99,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--build-dir", type=Path)
     args = parser.parse_args()
-    fixture = check_wiring()
+    payload = check_wiring()
     with TemporaryDirectory(prefix="usp-history-subgroup-") as temporary:
+        fixture = Path(temporary) / "legacy-v1.bin"
+        fixture.write_bytes(payload)
         execute(args.build_dir or Path(temporary) / "result", fixture)
 
 
