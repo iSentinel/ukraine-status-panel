@@ -38,6 +38,16 @@ def check_closure(runtime: dict[str, str]) -> None:
             if root not in target.parents or not target.is_file():
                 raise AssertionError(f"unresolved local module {name}: {reference}")
 
+def check_publication_closure() -> None:
+    """Require Pages and release archives to ship the pinned local runtime."""
+    pages = (ROOT / ".github/workflows/pages.yml").read_text()
+    bundle = (ROOT / "scripts/make-public-release.sh").read_text()
+    assert "cp -a web-installer/vendor _site/vendor" in pages
+    assert 'cp -a "$ROOT/web-installer/vendor" "$bundle/vendor"' in bundle
+    hashes = "find vendor -type f -print0 | sort -z | xargs -0 sha256sum"
+    assert hashes in pages and hashes in bundle
+
+
 def main() -> None:
     """Validate provenance, byte hashes, closure and local-only HTML."""
     html = (WEB / "index.html").read_text()
@@ -53,6 +63,7 @@ def main() -> None:
     for name, expected_hash in runtime.items():
         assert digest(VENDOR / name) == expected_hash
     check_closure(runtime)
+    check_publication_closure()
     assert (VENDOR / "LICENSE").stat().st_size > 1000
     notices = json.loads((VENDOR / "THIRD_PARTY_LICENSES.json").read_text())
     assert len(notices) >= 10
