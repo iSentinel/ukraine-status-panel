@@ -19,6 +19,8 @@ cp "$ROOT/web-installer/index.html" "$bundle/"
 cp "$MANIFEST" "$bundle/"
 cp "$ROOT/web-installer/release-status.json" "$bundle/"
 cp "$ROOT/web-installer/README.md" "$bundle/"
+# Keep the same pinned local runtime used by the installer HTML.
+cp -a "$ROOT/web-installer/vendor" "$bundle/vendor"
 cp "$PUBLIC_YAML" "$bundle/ukraine-status-panel-public-first-flash.yaml"
 cp "$FACTORY" "$bundle/firmware.factory.bin"
 # Check the copied bytes and metadata that will enter the archive.
@@ -29,6 +31,7 @@ python3 "$ROOT/scripts/validate-web-manifest.py" --require-hardware-validated \
   cd "$bundle"
   sha256sum firmware.factory.bin manifest.json release-status.json index.html \
     ukraine-status-panel-public-first-flash.yaml README.md > SHA256SUMS
+  find vendor -type f -print0 | sort -z | xargs -0 sha256sum >> SHA256SUMS
 )
 archive="$OUT/ukraine-status-panel-$version-public-first-flash.tar.gz"
 tar --sort=name --mtime='UTC 2020-01-01' --owner=0 --group=0 --numeric-owner \
