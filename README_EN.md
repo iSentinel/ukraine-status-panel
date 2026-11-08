@@ -37,9 +37,10 @@ The project uses a fail-closed validation pipeline. Source changes pass static/n
 ```bash
 git clone https://github.com/iSentinel/ukraine-status-panel.git
 cd ukraine-status-panel
-cp secrets.example.yaml secrets.yaml
 esphome config firmware/ukraine-status-panel-public-first-flash.yaml
 ```
+
+The public USB provisioning profile contains no `!secret` references, so it does not require `secrets.yaml`. For a separate private build, copy `secrets.example.yaml` to `firmware/secrets.yaml`, replace all placeholders, and keep it untracked. The public Web Installer is still `validation-required`: no factory image is approved for general flashing until exact-version USB first-flash hardware acceptance. Do not reflash a working device to test these instructions. See [Web Installer guidance](web-installer/README.md).
 
 The public repository intentionally excludes deployment secrets, local IP addresses, private checkpoints, UART logs and frozen production artifacts.
 
