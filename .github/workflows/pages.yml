@@ -56,11 +56,17 @@ jobs:
         run: |
           mkdir -p _site
           cp web-installer/index.html web-installer/manifest.json web-installer/release-status.json web-installer/README.md _site/
+          # The HTML imports this pinned local runtime; it must ship with Pages.
+          cp -a web-installer/vendor _site/vendor
           factory="_accepted/firmware.factory.bin"
           test -f "$factory"
           cp "$factory" _site/firmware.factory.bin
           python scripts/validate-web-manifest.py --require-hardware-validated --site-dir _site --factory-image _site/firmware.factory.bin
-          (cd _site && sha256sum firmware.factory.bin manifest.json release-status.json index.html README.md > SHA256SUMS)
+          (
+            cd _site
+            sha256sum firmware.factory.bin manifest.json release-status.json index.html README.md > SHA256SUMS
+            find vendor -type f -print0 | sort -z | xargs -0 sha256sum >> SHA256SUMS
+          )
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
