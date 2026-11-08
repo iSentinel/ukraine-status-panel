@@ -20,3 +20,17 @@ production profile, flash it over USB. No shared network update password or API
 key is embedded. / Публичный профиль не открывает Native API и OTA; переход на
 личную конфигурацию выполняется через USB. / Публічний профіль не відкриває
 Native API та OTA; перехід на власну конфігурацію виконується через USB.
+
+## Publication packaging integrity
+
+The installer HTML imports its flashing runtime from the local
+`vendor/esp-web-tools/10.4.0/` directory. **Both** the GitHub Pages site
+and the public first-flash release archive must include the complete
+`vendor/` tree. Their generated `SHA256SUMS` files list these runtime
+assets alongside the factory image and manifest; the source test
+`tests/web-installer-runtime-static.py` checks this packaging contract.
+
+A source checkout or metadata-only Pages preview is not a validated
+factory image. Publication continues to require the exact-image hardware
+acceptance and existing fail-closed release checks. This documentation
+change does not authorize a production build, USB flash, or OTA.
