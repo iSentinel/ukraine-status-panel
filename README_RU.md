@@ -34,9 +34,10 @@
 ```bash
 git clone https://github.com/iSentinel/ukraine-status-panel.git
 cd ukraine-status-panel
-cp secrets.example.yaml secrets.yaml
 esphome config firmware/ukraine-status-panel-public-first-flash.yaml
 ```
+
+Публичный профиль первичной USB-настройки не использует `!secret`, поэтому `secrets.yaml` для проверки конфигурации не нужен. Для отдельной **личной** сборки скопируйте `secrets.example.yaml` в `firmware/secrets.yaml`, замените все значения и не добавляйте файл в Git. Публичный Web Installer сохраняет статус `validation-required`: его образ нельзя считать допущенным к установке до аппаратного теста именно этой версии на запасном устройстве. Не перепрошивайте работающую панель ради выполнения этих инструкций. См. [руководство Web Installer](web-installer/README.md).
 
 Публичный репозиторий не содержит паролей, локальных IP стенда, внутренних checkpoint-файлов, UART-логов и frozen production artifacts.
 

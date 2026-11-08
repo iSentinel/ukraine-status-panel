@@ -82,19 +82,15 @@ Release policy is fail-closed:
 
 ## Quick start
 
-The project currently targets developers and hardware testers. Start with the public first-flash profile and create your local secrets file from the example:
+The project currently targets developers and hardware testers. The public first-flash YAML is a USB provisioning profile **without embedded Wi-Fi credentials or `!secret` references**:
 
 ```bash
 git clone https://github.com/iSentinel/ukraine-status-panel.git
 cd ukraine-status-panel
-cp secrets.example.yaml secrets.yaml
-```
-
-Validate with ESPHome 2026.10.1:
-
-```bash
 esphome config firmware/ukraine-status-panel-public-first-flash.yaml
 ```
+
+Use the pinned ESPHome toolchain specified by the project. No `secrets.yaml` is required for the public configuration check. For a separate **private** profile, copy `secrets.example.yaml` to `firmware/secrets.yaml` and replace its placeholders; never commit that file. The public factory image and Web Installer remain `validation-required` until an exact-version USB first-flash is accepted on spare hardware. **Do not flash a working panel simply to follow these steps.** See [Web Installer guidance](web-installer/README.md).
 
 For ordinary development, see the scripts and CI checks in the repository before building a production image.
 
