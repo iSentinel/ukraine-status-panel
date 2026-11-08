@@ -144,6 +144,9 @@ def bundle_command(work: Path, accepted: dict, image: Path):
     (work / "web-installer/release-status.json").write_text(
         json.dumps(accepted)
     )
+    shutil.copytree(
+        ROOT / "web-installer/vendor", work / "web-installer/vendor"
+    )
     env = dict(os.environ)
     env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env["PATH"]
     return ["bash", str(scripts / "make-public-release.sh"), str(image)], env
@@ -168,6 +171,19 @@ def bundle(work: Path, accepted: dict, image: Path) -> None:
             n for n in stream.getnames() if n.endswith("/firmware.factory.bin")
         )
         assert stream.extractfile(name).read() == image.read_bytes()
+        runtime_name = next(
+            n for n in stream.getnames()
+            if n.endswith("/vendor/esp-web-tools/10.4.0/install-button.js")
+        )
+        expected = (ROOT / "web-installer/vendor/esp-web-tools/10.4.0"
+                    "/install-button.js").read_bytes()
+        assert stream.extractfile(runtime_name).read() == expected
+        sums_name = next(
+            n for n in stream.getnames() if n.endswith("/SHA256SUMS")
+        )
+        assert b"vendor/esp-web-tools/10.4.0/install-button.js" in (
+            stream.extractfile(sums_name).read()
+        )
     image.write_bytes(image.read_bytes() + b"changed")
     blocked = subprocess.run(
         command + [str(work / "blocked")],
